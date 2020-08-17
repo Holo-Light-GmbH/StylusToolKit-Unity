@@ -1,0 +1,24 @@
+{
+    "name": "com.hololight.stylustoolkit.examples",
+    "references": [
+        "com.hololight.stylustoolkit",
+        "Microsoft.MixedReality.Toolkit",
+        "Unity.TextMeshPro",
+        "Microsoft.MixedReality.Toolkit.SDK"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [
+        "Editor",
+        "LinuxStandalone64",
+        "macOSStandalone",
+        "WSA",
+        "WindowsStandalone32",
+        "WindowsStandalone64"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

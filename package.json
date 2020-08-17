@@ -1,0 +1,21 @@
+{
+    "name": "com.hololight.stylustoolkit",
+    "displayName": "StylusXR Toolkit",
+    "version": "1.0.1",
+    "unity": "2018.4",
+    "description": "Holo-Light Stylus Toolkit helps you to get started with developing with the StylusXR \nTo find out more, click the \"View Documentation\" link.",
+    "keywords": [ "Stylus Toolkit", "StylusXR", "Holo-Light" ],
+    "category": "Toolkit",
+    "author": {
+        "name": "Holo-Light GmbH",
+        "url": "https://www.holo-light.com/"
+    },
+    "samples": [
+        {
+            "displayName": "All Examples in One",
+            "description": "StylusXR Demo Scenes from Basic to Advanced Examples.", 
+            "path": "Samples/AllExamples",
+            "type": "sample"
+        }
+    ]
+}

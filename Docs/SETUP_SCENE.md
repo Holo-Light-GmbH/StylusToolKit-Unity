@@ -1,22 +1,29 @@
 # Setup Scene for Stylus and Building
 
 ## Configure Scene and Project Settings
-* The most important prefab is **Stylus** which is located in Holo-Light → STK →  Prefabs → Stylus. To set up the most basic Stylus Scene just drag the prefab **Stylus** in the hierarchy of **MixedRealityPlayspace**.
+* The most important prefab is **Stylus** which is located in `Holo-Light → STK →  Prefabs → Stylus`. To set up the most basic Stylus Scene just drag the prefab **Stylus** in the hierarchy of **MixedRealityPlayspace**.
 
-<img src="imgs/StylusConfig1.PNG">
+<p align="center">
+	<img src="imgs/StylusConfig1.PNG" width="75%">
+</p>
 
 * Now we just need to configure some MRTK Profiles. Select the **MixedRealityToolkit** object and change the **MixedRealityConfigurationProfile** → **StylusMixedRealityToolkitConfigurationProfile** (see next picture). 
 
-<img src="imgs/StylusConfig2.PNG">
+<p align="center">
+	<img src="imgs/StylusConfig2.PNG" width="75%">
+</p>
 
 * We recommend to change the Field of View value from the **Main Camera** to **26**. This represents the FoV of the HoloLens 2.
 
-:information_source: **If you want to adapt your exisiting Profile, then have a look here [Configuring MRTK Profiles for Stylus](STYLUSXR_PROFILES.md)**
+> :information_source: **If you want to adapt your exisiting Profile, then have a look here [Configuring MRTK Profiles for Stylus](STYLUS_PROFILES.md)**
+
 <br>
 
-Go to Player Settings → Publishing Settings → Capabilities and make sure that the **Bluetooth Capability** is ticked [✔] before you build you project. (otherwise you can add it later inside the built VS Solution inside the Package.appxmanifest Capabilities section)
+Go to `Player Settings → Publishing Settings → Capabilities` and make sure that the **Bluetooth Capability** is ticked [✔] before you build you project. (otherwise you can add it later inside the built VS Solution inside the `Package.appxmanifest` Capabilities section)
 
-<img src="imgs/PlayerSettingBluetooth.PNG">
+<p align="center">
+	<img src="imgs/PlayerSettingBluetooth.PNG" width="75%">
+</p>
 
 ## Ready to go!
 

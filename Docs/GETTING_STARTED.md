@@ -14,11 +14,13 @@ To get started with the Stylus Toolkit (STK), you will need:
 2. Import MRTK_FIX into your Project (STK_MRTK_2.3_FIX or STK_MRTK_2.4_FIX => these files can be found in the [release section](https://github.com/Holo-Light-GmbH/StylusToolKit-Unity/releases))
 3. Import Stylus Toolkit (STK)
 - Open in Unity → Window → Package Manager (2 different ways)
-  - Add package from disk … (Download the Package and extract it on your hard drive and select the package.json file => the Package is attached at the bottom as .zip)
+  - Add package from disk … (Download the Package and extract it on your hard drive and select the package.json file => the Package is attached in the [release section](https://github.com/Holo-Light-GmbH/StylusToolKit-Unity/releases))
   - Add package from git URL … (https://github.com/Holo-Light-GmbH/StylusToolKit-Unity.git)
 
 Recommended Step to get into STK:
 
 4. Select the Stylus XR Toolkit Package and Import the Samples by clicking on “Import into Project”
+
+> :information_source: Check out the **AllInOne** Example and explore the possibilities
 
 5. Next Step: [Setup Scene for StylusXR](SETUP_SCENE.md)

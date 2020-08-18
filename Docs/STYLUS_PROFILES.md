@@ -1,4 +1,4 @@
-# Configuring MRTK Profiles for Stylus
+# Configuring MRTK Profiles for Stylus XR
 
 In general, you should use the preconfigured Stylus Profiles. But if you want to adapt the Stylus Profile manually to adjust it to your needs, then this guide is for you. Or if you have already customized profiles and want to merge the Stylus Profile into the exisiting one.
 

@@ -1,4 +1,4 @@
-# Stylus Configurations
+# Stylus XR Configurations
 
 With the Stylus Configration you can configure some important behaviors. To create a custom configuration, click on **Assets → Create → Holo-Light → Stylus Configuration**.
 

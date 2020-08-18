@@ -10,7 +10,7 @@ To get started with the Stylus Toolkit (STK), you will need:
 
 ## Step by Step Guide
 
-1. Import MRTK into your Project (https://microsoft.github.io/MixedRealityToolkit-Unity/Documentation/GettingStartedWithTheMRTK.html) - if MRTK is not included yet
+1. Import MRTK into your Project ([Getting Started with MRTK](https://microsoft.github.io/MixedRealityToolkit-Unity/Documentation/GettingStartedWithTheMRTK.html)) - if MRTK is not included yet
 2. Import MRTK_FIX into your Project (STK_MRTK_2.3_FIX or STK_MRTK_2.4_FIX => these files can be found in the [release section](https://github.com/Holo-Light-GmbH/StylusToolKit-Unity/releases))
 3. Import Stylus Toolkit (STK)
 - Open in Unity → Window → Package Manager (2 different ways)

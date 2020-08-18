@@ -1,4 +1,4 @@
-# Setup Scene for Stylus and Building
+# Setup Scene for Stylus XR and Building/Deploying
 
 ## Configure Scene and Project Settings
 * The most important prefab is **Stylus** which is located in `Holo-Light → STK →  Prefabs → Stylus`. To set up the most basic Stylus Scene just drag the prefab **Stylus** in the hierarchy of **MixedRealityPlayspace**.
@@ -15,7 +15,7 @@
 
 * We recommend to change the Field of View value from the **Main Camera** to **26**. This represents the FoV of the HoloLens 2.
 
-> :information_source: **If you want to adapt your exisiting Profile, then have a look here [Configuring MRTK Profiles for Stylus](STYLUS_PROFILES.md)**
+> :information_source: **If you want to adapt your exisiting Profile, then have a look here [Configuring MRTK Profiles for Stylus XR](STYLUS_PROFILES.md)**
 
 <br>
 

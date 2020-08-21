@@ -41,6 +41,9 @@ namespace HoloLight.STK.MRTK
         private int _stylusOnRightHandSureness = 0;
         private int _stylusNotVisibleSureness = 0;
 
+        private Vector3 _leftHandAveragePosition = Vector3.zero;
+        private Vector3 _rightHandAveragePosition = Vector3.zero;
+
         private HoloStylusManager _manager;
 
         private bool _initialized = false;
@@ -277,6 +280,7 @@ namespace HoloLight.STK.MRTK
                 Vector3 leftThumbTipPos = Vector3.zero;
                 Vector3 rightThumbTipPos = Vector3.zero;
 
+
                 bool leftHandFound = false;
                 bool rightHandFound = false;
                 bool leftIndexTipFound = false;
@@ -304,7 +308,6 @@ namespace HoloLight.STK.MRTK
                                 rightHandFound = true;
                             }
 
-
                             var hand = p.Controller as IMixedRealityHand;
                             if (hand != null)
                             {
@@ -323,7 +326,7 @@ namespace HoloLight.STK.MRTK
                                 }
 
                                 // reading Thumg Tip Position
-                                if (hand.TryGetJoint(TrackedHandJoint.ThumbTip, out MixedRealityPose thumbPose)) 
+                                if (hand.TryGetJoint(TrackedHandJoint.ThumbTip, out MixedRealityPose thumbPose))
                                 {
                                     if (hand.ControllerHandedness == Handedness.Left)
                                     {
@@ -341,106 +344,58 @@ namespace HoloLight.STK.MRTK
                     }
                 }
 
-                if (rightHandFound == false)
-                {
-                    rightHandPosition = _stylusTransform.Position + new Vector3(2, 2, 2); /// when hand is not visible, just make a fake position which is very far away
-                }
-
-                if (leftHandFound == false)
-                {
-                    leftHandPosition = _stylusTransform.Position - new Vector3(-2, -2, -2); /// when hand is not visible, just make a fake position which is very far away
-                }
-
+                /// GETTING LEFT HAND POSITION => FROM ACCURATE TO UNACCURATE
                 if (leftIndexTipFound)
                 {
-                    // is Left Index Tip near Stylus => if yes, then enable the rightHandPointers if it is already sure on leftHand
-                    if (Vector3.Distance(leftIndexTipPos, _stylusTransform.Position) < Vector3.Distance(rightHandPosition, _stylusTransform.Position))
-                    {
-                        if (_stylusOnLeftHandSureness > 30)
-                        {
-                            StylusIsInLeftHand();
-                            _stylusOnRightHandSureness = 0;
-                        }
-                        else
-                        {
-                            _stylusOnLeftHandSureness += 2;
-                        }
-                    }
+                    _leftHandAveragePosition = leftIndexTipPos;
                 }
-
-                if (leftThumbTipFound)
+                else if (leftThumbTipFound)
                 {
-                    if (Vector3.Distance(leftThumbTipPos, _stylusTransform.Position) < Vector3.Distance(rightHandPosition, _stylusTransform.Position))
-                    {
-                        if (_stylusOnLeftHandSureness > 30)
-                        {
-                            StylusIsInLeftHand();
-                            _stylusOnRightHandSureness = 0;
-                        }
-                        else
-                        {
-                            _stylusOnLeftHandSureness += 2;
-                        }
-                    }
+                    _leftHandAveragePosition = leftThumbTipPos;
+                }
+                else if (leftHandFound)
+                {
+                    _leftHandAveragePosition = leftHandPosition;
                 }
 
+                /// GETTING RIGHT HAND POSITION => FROM ACCURATE TO INACCURATE
                 if (rightIndexTipFound)
                 {
-                    if (Vector3.Distance(rightIndexTipPos, _stylusTransform.Position) < Vector3.Distance(leftHandPosition, _stylusTransform.Position))
-                    {
-                        if (_stylusOnRightHandSureness > 30)
-                        {
-                            StylusIsInRightHand();
-                            _stylusOnLeftHandSureness = 0;
-                        }
-                        else
-                        {
-                            _stylusOnRightHandSureness += 2;
-                        }
-                    }
+                    _rightHandAveragePosition = rightIndexTipPos;
+                }
+                else if (rightThumbTipFound)
+                {
+                    _rightHandAveragePosition = rightThumbTipPos;
+                }
+                else if (rightHandFound)
+                {
+                    _rightHandAveragePosition = rightHandPosition;
                 }
 
-                if (rightThumbTipFound)
+                // is Left Hand Position near Stylus => if yes, then enable the rightHandPointers if it is already sure on leftHand
+                if (Vector3.Distance(_leftHandAveragePosition, _stylusTransform.Position) < Vector3.Distance(_rightHandAveragePosition, _stylusTransform.Position))
                 {
-                    if (Vector3.Distance(rightThumbTipPos, _stylusTransform.Position) < Vector3.Distance(leftHandPosition, _stylusTransform.Position))
+                    if (_stylusOnLeftHandSureness > 15)
                     {
-                        if (_stylusOnRightHandSureness > 30)
-                        {
-                            StylusIsInRightHand();
-                            _stylusOnLeftHandSureness = 0;
-                        }
-                        else
-                        {
-                            _stylusOnRightHandSureness += 2;
-                        }
-                    }
-                }
-
-                if (leftHandFound && rightHandFound)
-                {
-                    if (Vector3.Distance(leftHandPosition, _stylusTransform.Position) < Vector3.Distance(rightHandPosition, _stylusTransform.Position))
-                    {
-                        if (_stylusOnLeftHandSureness > 30)
-                        {
-                            StylusIsInLeftHand();
-                            _stylusOnRightHandSureness = 0;
-                        }
-                        else
-                        {
-                            _stylusOnLeftHandSureness++;
-                        }
+                        StylusIsInLeftHand();
+                        _stylusOnRightHandSureness = 0;
                     }
                     else
                     {
-                        if (_stylusOnRightHandSureness > 30)
-                        {
-                            StylusIsInRightHand();
-                            _stylusOnLeftHandSureness = 0;
-                        }
-                        else
-                        {
-                            _stylusOnRightHandSureness++;
-                        }
+                        _stylusOnLeftHandSureness++;
+                    }
+                }
+
+                if (Vector3.Distance(_rightHandAveragePosition, _stylusTransform.Position) < Vector3.Distance(_leftHandAveragePosition, _stylusTransform.Position))
+                {
+                    if (_stylusOnRightHandSureness > 15)
+                    {
+                        StylusIsInRightHand();
+                        _stylusOnLeftHandSureness = 0;
+                    }
+                    else
+                    {
+                        _stylusOnRightHandSureness++;
                     }
                 }
             }

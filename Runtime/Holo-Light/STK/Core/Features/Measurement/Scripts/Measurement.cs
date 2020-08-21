@@ -10,7 +10,7 @@ namespace HoloLight.STK.Features.Measurement
         private GameObject _startPointVisual; //TODO Encapsulate the visualization together with their Vectors
         private GameObject _endPointVisual; //TODO Container the Gameobjects together
         private GameObject _line;
-        private TextMesh _distanceText;
+        private GameObject _containerObject;
 
         private MeasurementVisualizer _visualizer;
         public MeasurementVisualizer Visualizer
@@ -29,7 +29,7 @@ namespace HoloLight.STK.Features.Measurement
 
         public GameObject GetGameObject()
         {
-            return _line;
+            return _containerObject;
         }
 
         public void AddPoint(Vector3 point)
@@ -56,8 +56,6 @@ namespace HoloLight.STK.Features.Measurement
                 _line = null;
                 GameObject.Destroy(_endPointVisual);
                 _endPointVisual = null;
-                GameObject.Destroy(_distanceText);
-                _distanceText = null;
             }
             else
             {
@@ -86,37 +84,9 @@ namespace HoloLight.STK.Features.Measurement
                 {
                     if (_endPointVisual == null)
                     {
-                        _endPointVisual = GameObject.Instantiate<GameObject>(_visualizer.EndPoint);
-                        _endPointVisual.transform.position = _endPoint.Value;
-                        _line = GameObject.CreatePrimitive(PrimitiveType.Cube);
-                        GameObject.Destroy(_line.GetComponent<Collider>());
-                        var length = (_endPoint.Value - _startPoint.Value);
-                        _line.GetComponent<Renderer>().material = _visualizer.LineMaterial;
-                        _line.transform.position = _startPoint.Value + length / 2;
-                        _line.transform.forward = _endPoint.Value - _startPoint.Value;
-                        _line.transform.localScale = new Vector3(_visualizer.LineThickness, _visualizer.LineThickness,
-                            length.magnitude);
-                        _distanceText = GameObject.Instantiate<TextMesh>(_visualizer.TextWindow);
-                        _distanceText.transform.position = new Vector3(0, 0.01f, 0) + _startPoint.Value + length / 2;
-                        _distanceText.transform.right = _line.transform.forward * (Vector3.Dot(_line.transform.forward, Camera.main.transform.right));
-
-
-                        float lengthInM = length.magnitude; // in m
-                        string finalValueString = "";
-                        if (lengthInM >= 1)
-                        {
-                            finalValueString = (lengthInM).ToString("0.00") + " m";
-                        }
-                        else if (lengthInM < 1 && lengthInM > 0.02f)
-                        {
-                            finalValueString = (lengthInM * 100).ToString("0.0") + " cm";
-                        }
-                        else if (lengthInM <= 0.02f)
-                        {
-                            finalValueString = (lengthInM * 1000).ToString("0") + " mm";
-                        }
-
-                        _distanceText.text = finalValueString;
+                        GameObject.Destroy(_startPointVisual);
+                        _containerObject = GameObject.Instantiate(_visualizer.Container);
+                        _containerObject.GetComponent<MeasurementObject>().Init(_startPoint.Value, _endPoint.Value, _visualizer);
                     }
                 }
             }
@@ -127,10 +97,7 @@ namespace HoloLight.STK.Features.Measurement
             UnityEngine.Object.Destroy(_startPointVisual);
             UnityEngine.Object.Destroy(_endPointVisual);
             UnityEngine.Object.Destroy(_line);
-            if (_distanceText != null)
-            {
-                UnityEngine.Object.Destroy(_distanceText.gameObject);
-            }
+            UnityEngine.Object.Destroy(_containerObject);
         }
     }
 }

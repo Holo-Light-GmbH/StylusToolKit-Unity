@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 4377502312698936578}
   - component: {fileID: 4377502312698936579}
   m_Layer: 0
-  m_Name: Measurement 1
+  m_Name: MeasurementManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -45,12 +45,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bb54505bf37c35b4297f57eef1424e3c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  DynamicMeasurements: 1
   ClicksPerPoint: 1
   DistanceThreshold: 1
   Visualizer: {fileID: 11400000, guid: 50cb595ba99181c4b937321a885f5713, type: 2}
+  _measurementsContainer: {fileID: 0}
   _inputACTIONHandler: {fileID: 4377502312698936578}
   _holoStylusManager: {fileID: 0}
-  _stylusPointerSwitcher: {fileID: 0}
 --- !u!114 &4377502312698936578
 MonoBehaviour:
   m_ObjectHideFlags: 0

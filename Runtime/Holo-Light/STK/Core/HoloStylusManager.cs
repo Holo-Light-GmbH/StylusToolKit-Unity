@@ -226,6 +226,7 @@ namespace HoloLight.STK.Core
             if (data.Length == 0)
             {
                 Debug.Log("EMPTY STREAM. Please turn off/on the HMU and try again.");
+                _nativePairingManager.EmptyStreamHandling();
             }
 
             if (data[0] == 0xFE && DataParser.IsInitialized && data.Length == 23)

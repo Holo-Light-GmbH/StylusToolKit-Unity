@@ -29,6 +29,10 @@ namespace HoloLight.STK.Core
         [SerializeField]
         public StartupBehaviorType StartupBehavior = StartupBehaviorType.AutoStart;
 
+        [Tooltip("If this option is on, it will connect to the last connected HMU Device when it finds that one.")]
+        [SerializeField]
+        public bool ConnectToLastDevice = true;
+
         [Tooltip("If set to true, it will use the mouse as Stylus inside the Unity Editor.")]
         [SerializeField]
         public bool IsEmulator = true;

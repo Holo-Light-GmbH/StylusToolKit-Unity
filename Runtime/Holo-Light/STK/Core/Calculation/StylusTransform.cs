@@ -6,7 +6,6 @@ namespace HoloLight.STK.Core
 {
     public class StylusTransform
     {
-
         #region CAMERA MOVEMENT FILTER 
 
         private const int TRANSFORM_QUEUE_LENGTH = 2;
@@ -45,7 +44,6 @@ namespace HoloLight.STK.Core
 
         private CalibrationPreferences _calibrationPreferences;
         private Transform _cameraTransform;
-
         public Vector3 RawPosition { get; private set; } = Vector3.zero;
         public Vector3 Position { get; private set; } = Vector3.zero;
         public Vector3 LastPosition { get; private set; } = Vector3.zero;
@@ -124,9 +122,12 @@ namespace HoloLight.STK.Core
             newStylusData.Position = stylusFrame.Position + _calibrationPreferences.PositionOffset;
             newStylusData.Rotation = stylusFrame.Rotation + _calibrationPreferences.RotationOffset;
 
+            ////// CAMERA FILTER /////////////////////////
             _oldTransform.position = _cameraTransform.position;
             _oldTransform.rotation = _cameraTransform.rotation;
+           
             Vector3 newStylusPosition;
+
             _oldTransformsQueue.Enqueue(new TransformQueueElement() { Position = _oldTransform.position, Rotation = _oldTransform.rotation });
 
             if (_queueCounter < TRANSFORM_QUEUE_LENGTH)
@@ -147,13 +148,13 @@ namespace HoloLight.STK.Core
 
             /////////////////////////////////////////  CALCULATION OF SMOOTH POSITION ///////////////////////////////////////////////////////////
 
-            float xDisatanceFactor = Math.Abs(LastPosition.x - newStylusPosition.x) * _multiplier + _additor;
-            float yDisatanceFactor = Math.Abs(LastPosition.y - newStylusPosition.y) * _multiplier + _additor;
-            float zDisatanceFactor = Math.Abs(LastPosition.z - newStylusPosition.z) * _multiplier + _additor;
+            float xDisatanceFactor = Math.Abs(LastPosition.x - RawPosition.x) * _multiplier + _additor;
+            float yDisatanceFactor = Math.Abs(LastPosition.y - RawPosition.y) * _multiplier + _additor;
+            float zDisatanceFactor = Math.Abs(LastPosition.z - RawPosition.z) * _multiplier + _additor;
 
-            float newX = Mathf.Lerp(LastPosition.x, newStylusPosition.x, xDisatanceFactor);
-            float newY = Mathf.Lerp(LastPosition.y, newStylusPosition.y, yDisatanceFactor);
-            float newZ = Mathf.Lerp(LastPosition.z, newStylusPosition.z, zDisatanceFactor);
+            float newX = Mathf.Lerp(LastPosition.x, RawPosition.x, xDisatanceFactor);
+            float newY = Mathf.Lerp(LastPosition.y, RawPosition.y, yDisatanceFactor);
+            float newZ = Mathf.Lerp(LastPosition.z, RawPosition.z, zDisatanceFactor);
 
             Vector3 smoothedPosition = new Vector3(newX, newY, newZ);
 
@@ -162,7 +163,6 @@ namespace HoloLight.STK.Core
             newStylusData.Buttons[1] = stylusFrame.Buttons[1];
 
             Position = newStylusData.Position;
-
 
             /////////////////////////////////////////  CALCULATION OF SMOOTH ROTATION ///////////////////////////////////////////////////////////
 

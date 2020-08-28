@@ -37,6 +37,12 @@ When set to Auto Start, after the App started, it will directly start searching 
 
 When set to Manual Start you have to manually call the function (HoloStylusManager.StartStylus()) which will start searching for a HMU and connect (if a cached device is found). - Manual Start is recommended, if the Stylus is an optional Input Device in your App
 
+**Connect To Last Device** (default is **enabled**)
+
+When set to enabled, once it finds the device which was connected last time, it will automatically connect to it. 
+
+If you don't want that automatic connect feature, disable that option.
+
 **IsEmulator** (default is **enabled**)
 
 When this Option is ticked on, your Mouse will simulate the Stylus Pointer inside the UNITY EDITOR.

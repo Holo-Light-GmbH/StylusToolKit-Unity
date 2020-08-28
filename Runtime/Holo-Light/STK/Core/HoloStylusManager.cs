@@ -42,7 +42,7 @@ namespace HoloLight.STK.Core
         public StylusTransform StylusTransform = new StylusTransform();
         public InfoManager InfoManager = new InfoManager();
         private NNReader _nnReader = new NNReader();
-
+         
         public VisualSettings VisualSettings = new VisualSettings();
 
         /// <summary>
@@ -63,8 +63,8 @@ namespace HoloLight.STK.Core
         /// </summary>
         private MouseStylusControl _mouseStylusControl;
 #endif
-        public bool IsPaired { get; set; }
-        public bool IsConnecting { get; set; }
+        public bool IsPaired { get; set; } = false;
+        public bool IsConnecting { get; set; } = false;
 
         private Stopwatch _timeOutWatch = new Stopwatch();
 
@@ -129,20 +129,17 @@ namespace HoloLight.STK.Core
             {
                 Destroy(_nativePairingManager.gameObject);
                 DeviceScanner.RegisterDeviceFoundCallback(OnDeviceFound);
-                if (StylusConfiguration.StartupBehavior == StylusConfiguration.StartupBehaviorType.AutoStart)
-                {
-                    AutoConnect();
-                }
             }
             else
             {
                 _nativePairingManager.Init(this);
                 DeviceScanner.RegisterDeviceFoundCallback(OnDeviceFoundList);
                 DeviceScanner.RegisterDeviceUpdatedCallback(OnDeviceUpdated); 
-                if (StylusConfiguration.StartupBehavior == StylusConfiguration.StartupBehaviorType.AutoStart)
-                {
-                    _nativePairingManager.SearchHMU();
-                }
+            }
+
+            if (StylusConfiguration.StartupBehavior == StylusConfiguration.StartupBehaviorType.AutoStart)
+            {
+                StartStylus();
             }
         }
 
@@ -155,22 +152,23 @@ namespace HoloLight.STK.Core
             {
                 if (StylusConfiguration.UseBluetoothSettings)
                 {
-                    AutoConnect();
+                    ScanForHMUs();
                 }
                 else
                 {
-                    _nativePairingManager.SearchHMU();
+                    _nativePairingManager.SearchAndListHMUs();
                 }
-            } else
+            }
+            else
             {
                 Debug.Log("Stylus is already connected or it is connecting now");
             }
         }
 
         /// <summary>
-        /// Starts searching for BLE devices
+        /// Starts searching for BLE devices and connects automatically
         /// </summary>
-        public void AutoConnect()
+        internal void ScanForHMUs()
         {
             IsPaired = false;
             IsConnecting = false;
@@ -182,13 +180,13 @@ namespace HoloLight.STK.Core
             OnDeviceFoundList(device);
         }
 
-        public void OnDeviceFoundList(IBLEDevice device)
+        private void OnDeviceFoundList(IBLEDevice device)
         {
             if (FilterHMUs(device)) return;
 
             if (device.IsConnectable())
             {
-                if (_nativePairingManager.HasSavedDevice() && device.ID == _nativePairingManager.SavedDeviceID)
+                if (StylusConfiguration.ConnectToLastDevice && _nativePairingManager.HasSavedDevice() && device.ID == _nativePairingManager.SavedDeviceID)
                 {
                     _nativePairingManager.Connect(device);
                 }
@@ -204,7 +202,7 @@ namespace HoloLight.STK.Core
         /// And connects to the device if the paired HMU is found
         /// </summary>
         /// <param name="device"></param>
-        public void OnDeviceFound(IBLEDevice device)
+        private void OnDeviceFound(IBLEDevice device)
         {
             if (FilterHMUs(device)) return;
 
@@ -221,7 +219,7 @@ namespace HoloLight.STK.Core
             return device.Name == "" || IsConnecting || IsPaired || !device.Name.ToLower().EndsWith(HMU_SUFFIX);
         }
 
-        public void OnStylusDataRecieved(byte[] data)
+        private void OnStylusDataRecieved(byte[] data)
         {
             if (data.Length == 0)
             {
@@ -266,7 +264,7 @@ namespace HoloLight.STK.Core
             }
         }
 
-        public async void OnStylusConnected(IBLEDevice connectedDevice)
+        private async void OnStylusConnected(IBLEDevice connectedDevice)
         {
             Debug.Log("OnStylusConnected: " + connectedDevice.Name);
 
@@ -372,7 +370,7 @@ namespace HoloLight.STK.Core
         {
             IsPaired = false;
             yield return new WaitForSeconds(delayTime);
-            AutoConnect();
+            StartStylus();
         }
 
         private void OnDisconnected(StylusData data)
@@ -381,11 +379,12 @@ namespace HoloLight.STK.Core
             _timeOutWatch.Reset();
             _timeOutWatch.Stop();
             IsPaired = false;
+            IsConnecting = false;
             _stylusFrame = null;
             PointerSwitcher.DisablePointer(StylusPointerSwitcher.PointerType.All);
             if (StylusConfiguration.ReconnectAfterDisconnection)
             {
-                StartStylus();
+                ReConnectDelayed(1);
             }
         }
 

@@ -10,7 +10,7 @@ namespace HoloLight.STK.MRTK
     [CustomEditor(typeof(StylusMixedRealityInputProfile))]
     public class StylusMixedRealityInputProfileInspector : BaseMixedRealityToolkitConfigurationProfileInspector
     {
-        private const string ProfileTitle = "Stylus Input Settings";
+        private const string ProfileTitle = "Stylus XR Input Settings";
         private const string ProfileDescription = "Settings used to configure the behavior of stylus controllers in Unity Editor.";
 
         private SerializedProperty _startingDistance;

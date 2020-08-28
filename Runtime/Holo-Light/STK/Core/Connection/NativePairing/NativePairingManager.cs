@@ -9,7 +9,7 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 
 namespace HoloLight.STK.Core
-{
+{ 
     /// <summary>
     /// Handles all the native Connection stuff. 
     /// </summary>
@@ -200,12 +200,12 @@ namespace HoloLight.STK.Core
         /// <summary>
         /// Clears the list and starts searching for active HMU devices
         /// </summary>
-        public void SearchHMU()
+        public void SearchAndListHMUs()
         {
             _emptyText.text = "Searching ...";
             _hmuDevices.Clear();
             ListFoundHMUDevices();
-            _manager.AutoConnect();
+            _manager.ScanForHMUs();
 
             if (_searching != null)
             {
@@ -289,7 +289,7 @@ namespace HoloLight.STK.Core
         {
             byte[] rebootCommand = new byte[] { 0xFF, 01 };
             _manager.Connector.SendData(rebootCommand);
-            _manager.ReConnectDelayed(1000);
+            _manager.ReConnectDelayed(1);
         }
 
         /// <summary>

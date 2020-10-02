@@ -5,8 +5,8 @@ When this GameObject is in the Scene, you will get a out-of-the-box working UI P
 If you want to create your own UI, have a look inside `Holo-Light/STK/Core/Connection/StylusUI.cs`. There you can see how it is made.
 
 <p align="center">
-	<img src="imgs/StylusUI.png" width="45%">
-	<img src="imgs/StylusUI2.png" width="45%">
+	<img src="imgs/StylusUI.PNG" width="45%">
+	<img src="imgs/StylusUI2.PNG" width="45%">
 </p>
 
 

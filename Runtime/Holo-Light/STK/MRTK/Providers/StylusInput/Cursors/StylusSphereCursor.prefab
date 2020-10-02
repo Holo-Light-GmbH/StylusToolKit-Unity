@@ -26,12 +26,11 @@ Transform:
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 2665618146280066652}
+  m_Children: []
   m_Father: {fileID: 2696286618509018896}
-  m_RootOrder: 0
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &3455979907861255611
+--- !u!1 &3065279195231806294
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -39,69 +38,10 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 2696286618509018896}
-  - component: {fileID: 1485552553035168454}
-  m_Layer: 0
-  m_Name: StylusSphereCursor
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2696286618509018896
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3455979907861255611}
-  m_LocalRotation: {x: 0.0000087072885, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children:
-  - {fileID: 7521151737680088869}
-  m_Father: {fileID: 0}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0.001, y: 0, z: 0}
---- !u!114 &1485552553035168454
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3455979907861255611}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b8a9ef5f8a8a8a544b72a491c9bc99f4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  surfaceCursorDistance: 0.02
-  useUnscaledTime: 1
-  positionLerpTime: 0.01
-  scaleLerpTime: 0.01
-  rotationLerpTime: 0.1
-  lookRotationBlend: 0.5
-  resizeCursorWithDistance: 0
-  cursorAngularSize: 50
-  PrimaryCursorVisual: {fileID: 2665618146280066652}
-  SourceDownIds: 
-  defaultCursorDistance: 2
-  checkForGrabbables: 0
-  skinSurfaceOffset: 0.01
-  alignWithSurfaceDistance: 0.1
-  indexFingerRingRenderer: {fileID: 7836748865129910597}
---- !u!1 &5824553974558005035
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2665618146280066652}
-  - component: {fileID: 4580794409421577493}
-  - component: {fileID: 7836748865129910597}
-  - component: {fileID: 3151788544209816874}
+  - component: {fileID: 3408297446622271227}
+  - component: {fileID: 4054332704920470288}
+  - component: {fileID: 877376046369223405}
+  - component: {fileID: 4409719694255225863}
   m_Layer: 0
   m_Name: StylusPoint
   m_TagString: Untagged
@@ -109,35 +49,35 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &2665618146280066652
+--- !u!4 &3408297446622271227
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5824553974558005035}
+  m_GameObject: {fileID: 3065279195231806294}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.007, y: 0.007, z: 0.007}
+  m_LocalScale: {x: 0.0069999998, y: 0.0069999998, z: 0.0069999998}
   m_Children: []
-  m_Father: {fileID: 7521151737680088869}
+  m_Father: {fileID: 2696286618509018896}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!33 &4580794409421577493
+--- !u!33 &4054332704920470288
 MeshFilter:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5824553974558005035}
+  m_GameObject: {fileID: 3065279195231806294}
   m_Mesh: {fileID: 4300000, guid: f40765d5434f237428eddf3a45ccb80e, type: 2}
---- !u!23 &7836748865129910597
+--- !u!23 &877376046369223405
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5824553974558005035}
+  m_GameObject: {fileID: 3065279195231806294}
   m_Enabled: 1
   m_CastShadows: 1
   m_ReceiveShadows: 1
@@ -168,13 +108,13 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
---- !u!114 &3151788544209816874
+--- !u!114 &4409719694255225863
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5824553974558005035}
+  m_GameObject: {fileID: 3065279195231806294}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9296b71443954db1b4571935a43e5266, type: 3}
@@ -182,3 +122,63 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   radius: 0.09
   color: {r: 0.25490198, g: 0.25490198, b: 0.25490198, a: 1}
+--- !u!1 &3455979907861255611
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2696286618509018896}
+  - component: {fileID: 1485552553035168454}
+  m_Layer: 0
+  m_Name: StylusSphereCursor
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2696286618509018896
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3455979907861255611}
+  m_LocalRotation: {x: 0.0000087072885, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children:
+  - {fileID: 3408297446622271227}
+  - {fileID: 7521151737680088869}
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0.001, y: 0, z: 0}
+--- !u!114 &1485552553035168454
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3455979907861255611}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8a9ef5f8a8a8a544b72a491c9bc99f4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  surfaceCursorDistance: 0.02
+  useUnscaledTime: 1
+  positionLerpTime: 0.01
+  scaleLerpTime: 0.01
+  rotationLerpTime: 0.1
+  lookRotationBlend: 0.5
+  resizeCursorWithDistance: 0
+  cursorAngularSize: 50
+  PrimaryCursorVisual: {fileID: 0}
+  SourceDownIds: 
+  defaultCursorDistance: 2
+  checkForGrabbables: 0
+  skinSurfaceOffset: 0.01
+  alignWithSurfaceDistance: 0.1
+  indexFingerRingRenderer: {fileID: 0}

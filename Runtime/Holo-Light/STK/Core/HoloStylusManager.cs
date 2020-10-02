@@ -4,6 +4,7 @@ using HoloLight.UnityDriver;
 #endif
 
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using HoloLight.STK.Core.Tracker;
 using HoloLight.STK.MRTK;
@@ -14,6 +15,8 @@ using System.Diagnostics;
 using Debug = UnityEngine.Debug;
 using System.IO;
 using System;
+using System.Collections.Concurrent;
+using System.Text;
 
 namespace HoloLight.STK.Core
 {
@@ -44,6 +47,10 @@ namespace HoloLight.STK.Core
         private NNReader _nnReader = new NNReader();
          
         public VisualSettings VisualSettings = new VisualSettings();
+        public IBLEDevice ConnectedHMU;
+
+        [SerializeField]
+        private bool _logInfos = false;
 
         /// <summary>
         /// A Reference to the PointerSwitcher
@@ -70,6 +77,64 @@ namespace HoloLight.STK.Core
 
         private string _filePath;
 
+        private bool _invokeStylusReadyEvent;
+        private bool _invokeStylusDisConnectedEvent = false;
+
+        public event EventHandler StartSearchEvent;
+        public event EventHandler<IBLEDevice> DeviceFoundEvent;
+        public event EventHandler<List<IBLEDevice>> DeviceSearchCompleteEvent;
+        public event EventHandler<IBLEDevice> ConnectingStarted;
+        /// <summary>
+        /// OnConnected = Bluetooth Connection established
+        /// OnStylusReady = HMU Initialized and ready to use
+        /// </summary>
+        public event EventHandler<IBLEDevice> OnStylusReady;
+        public event EventHandler DisconnectedEvent;
+        public event EventHandler ConnectionTimeoutEvent;
+
+        private ConcurrentQueue<IBLEDevice> _lastFoundHMUDevices = new ConcurrentQueue<IBLEDevice>();
+        private List<IBLEDevice> _knownHMUs = new List<IBLEDevice>();
+
+        internal void OnStartSearch()
+        {
+            _knownHMUs.Clear();
+            Debug.Log("OnStartSearch");
+            StartSearchEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void OnHMUDeviceFound(IBLEDevice device)
+        {
+            Debug.Log("OnHMUDeviceFound");
+            if(!_knownHMUs.Contains(device))
+            {
+                _knownHMUs.Add(device);
+                _lastFoundHMUDevices.Enqueue(device);
+            }
+        }
+
+        internal void OnDeviceSearchComplete(List<IBLEDevice> devices)
+        {
+            Debug.Log("OnDeviceSearchComplete" + devices.Count);
+            DeviceSearchCompleteEvent?.Invoke(this, devices);
+        }
+
+        internal void OnReadyToUse(IBLEDevice device)
+        {
+            Debug.Log("OnReadyToUse"); 
+            OnStylusReady?.Invoke(this, device);
+        }
+
+        internal void OnDisconnected()
+        {
+            Debug.Log("OnDisconnected");
+            DisconnectedEvent?.Invoke(this, EventArgs.Empty);
+        }
+
+        internal void OnConnectionTimeoutEvent()
+        {
+            Debug.Log("OnConnectionTimeoutEvent");
+            ConnectionTimeoutEvent?.Invoke(this, EventArgs.Empty);
+        }
 
         void Awake()
         {
@@ -117,6 +182,7 @@ namespace HoloLight.STK.Core
 
             Connector.RegisterDataCallback(OnStylusConnected);
             Connector.RegisterDataCallback(OnStylusDataRecieved);
+            Connector.RegisterDisconnectCallback(OnStylusDisconnected);
 
             CalibrationPreferences.Init(this);
             StylusTransform.Init(this);
@@ -143,6 +209,14 @@ namespace HoloLight.STK.Core
             }
         }
 
+        private void OnStylusDisconnected(IBLEDevice disconnectedDevice)
+        {
+            if (IsPaired)
+            {
+                _invokeStylusDisConnectedEvent = true;
+            }
+        }
+
         /// <summary>
         /// Starts searching for the Stylus and tries to connect to it
         /// </summary>
@@ -150,6 +224,7 @@ namespace HoloLight.STK.Core
         {
             if (!IsPaired && !IsConnecting)
             {
+                OnStartSearch();
                 if (StylusConfiguration.UseBluetoothSettings)
                 {
                     ScanForHMUs();
@@ -186,9 +261,12 @@ namespace HoloLight.STK.Core
 
             if (device.IsConnectable())
             {
+                // Invoke an event when stylus device is found.
+                OnHMUDeviceFound(device);
+                
                 if (StylusConfiguration.ConnectToLastDevice && _nativePairingManager.HasSavedDevice() && device.ID == _nativePairingManager.SavedDeviceID)
                 {
-                    _nativePairingManager.Connect(device);
+                    ConnectToHMU(device);
                 }
                 else
                 {
@@ -198,7 +276,18 @@ namespace HoloLight.STK.Core
         }
 
         /// <summary>
-        /// When devices are found, they we look for a device with a hmu_v_2 in the name and if the device is paired (HoloLens Bluetooth Settigns)
+        /// The connect function
+        /// </summary>
+        /// <param name="device"></param>
+        public void ConnectToHMU(IBLEDevice device)
+        {
+            ConnectingStarted?.Invoke(this, device);
+            _nativePairingManager.Connect(device);
+        }
+
+        /// <summary>
+        /// ! This device found is only triggered, when using the HoloLens Bluetooth Settings !
+        /// When devices are found, they we look for a device with a hmu_v_2 in the name and if the device is paired 
         /// And connects to the device if the paired HMU is found
         /// </summary>
         /// <param name="device"></param>
@@ -251,16 +340,31 @@ namespace HoloLight.STK.Core
                 EventManager.PushNewBatteryData(InfoManager.BatteryPercentage);
             }
 
-            if (_timeOutWatch.ElapsedMilliseconds > 3000)
-            {
-                EventManager.TriggerDisconnected();
-            }
-
             _debugInformationCount++;
             if (_debugInformationCount > 600)
             {
                 _debugInformationCount = 0;
                 LogImportantInfos();
+            }
+
+            if (_lastFoundHMUDevices.Count > 0)
+            {
+                if (_lastFoundHMUDevices.TryDequeue(out var hmu))
+                {
+                    DeviceFoundEvent?.Invoke(this, hmu);
+                }
+            }
+
+            if (_invokeStylusReadyEvent)
+            {
+                _invokeStylusReadyEvent = false;
+                OnReadyToUse(ConnectedHMU);
+            }
+
+            if (_invokeStylusDisConnectedEvent)
+            {
+                _invokeStylusDisConnectedEvent = false;
+                EventManager.TriggerDisconnected();
             }
         }
 
@@ -270,15 +374,24 @@ namespace HoloLight.STK.Core
 
             IsConnecting = false;
             IsPaired = true;
-            Device = connectedDevice;
 
 #if UNITY_EDITOR
             if (StylusConfiguration.IsEmulator)
             {
                 _mouseStylusControl.Activate(this);
+                OnReadyToUse(connectedDevice);
                 return; // Emulator does not need the NNF File 
             }
 #endif
+            if (ConnectedHMU != null)
+            {
+                // If a new HMU connects, NNF needs to be read again
+                if (ConnectedHMU.ID != connectedDevice.ID)
+                {
+                    DataParser = new HMU2DataParser();
+                }
+            }
+
             if (DataParser.IsInitialized == false)
             {
                 NeuralNetworkData nnfData;
@@ -320,15 +433,15 @@ namespace HoloLight.STK.Core
             // Read Calibration
             CalibrationPreferences.ReadCalibration();
 
-            if (InfoManager.FirmwareVersion == "1.0.0")
-            {   
-                // Read Firmware
-                InfoManager.ReadFirmwareVersion();
-            }
-
+            // Read Firmware
+            InfoManager.ReadFirmwareVersion();
+            
+            // Vibrate the Stylus to give feedback to user
             InfoManager.Vibrate(VibrateTime.VeryShort);
 
             DeviceScanner.StopScanning();
+            ConnectedHMU = connectedDevice;
+            _invokeStylusReadyEvent = true;
         }
 
         /// <summary>
@@ -349,7 +462,6 @@ namespace HoloLight.STK.Core
         {
             Connector.Disconnect();
             // fire disconnected event immediately
-            EventManager.TriggerDisconnected();
         }
 
         /// <summary>
@@ -375,13 +487,13 @@ namespace HoloLight.STK.Core
 
         private void OnDisconnected(StylusData data)
         {
-            Debug.Log("Disconnected");
             _timeOutWatch.Reset();
             _timeOutWatch.Stop();
             IsPaired = false;
             IsConnecting = false;
             _stylusFrame = null;
-            PointerSwitcher.DisablePointer(StylusPointerSwitcher.PointerType.All);
+            OnDisconnected();
+            //PointerSwitcher.(StylusPointerSwitcher.PointerType.All);
             if (StylusConfiguration.ReconnectAfterDisconnection)
             {
                 ReConnectDelayed(1);
@@ -390,22 +502,57 @@ namespace HoloLight.STK.Core
 
         private void LogImportantInfos()
         {
-            string logText = "";
+            if (_logInfos)
+            {
+                string logText = "";
 
-            logText += $"HMU IsConnecting: {IsConnecting}\n";
-            logText += $"HMU Connected (IsPaired): {IsPaired}\n";
-            logText += $"NNF Read: {_nnReader.GetInformation()}\n";
-            logText += $"DataParser Initialized: {DataParser.IsInitialized}\n";
-            logText += $"Stylus Visible: {DataParser.IsVisible}\n";
-            logText += $"Stylus Battery: {InfoManager.BatteryPercentage}\n";
-            logText += $"Firmware Version: {InfoManager.FirmwareVersion}\n";
-            logText += $"PositionOffset: {CalibrationPreferences.PositionOffset.ToString("F3")}\n";
-            logText += $"RotationOffset: {CalibrationPreferences.RotationOffset.ToString("F3")}\n";
-            logText += $"Prefered Hand: {CalibrationPreferences.StylusPreferredHand}\n";
+                logText += $"HMU IsConnecting: {IsConnecting}\n";
+                logText += $"HMU Connected (IsPaired): {IsPaired}\n";
+                logText += $"NNF Read: {_nnReader.GetInformation()}\n";
+                logText += $"DataParser Initialized: {DataParser.IsInitialized}\n";
+                logText += $"Stylus Visible: {DataParser.IsVisible}\n";
+                logText += $"Stylus Battery: {InfoManager.BatteryPercentage}\n";
+                logText += $"Firmware Version: {InfoManager.FirmwareVersion}\n";
+                logText += $"PositionOffset: {CalibrationPreferences.PositionOffset.ToString("F3")}\n";
+                logText += $"RotationOffset: {CalibrationPreferences.RotationOffset.ToString("F3")}\n";
+                logText += $"Prefered Hand: {CalibrationPreferences.StylusPreferredHand}\n";
 
-            Debug.Log(logText);
+                Debug.Log(logText);
+            }
         }
 
+        /// <summary>
+        /// Cleans up the ID/Mac and returns a common string for the user (in this format AA:BB:CC:DD:EE:DD)
+        /// </summary>
+        /// <param name="ID"></param>
+        /// <returns></returns>
+        internal string GetCleanMACAddress(string ID)
+        {
+            string macAddress = "";
+            if (ID.Length == 12)
+            {
+                var builder = new StringBuilder();
+                int count = 0;
+                foreach (var c in ID)
+                {
+                    builder.Append(c);
+                    if ((++count % 2) == 0 && count % 12 != 0)
+                    {
+                        builder.Append(':');
+                    }
+                }
+                macAddress = builder.ToString().ToUpper();
+            }
+            else if (ID.Length < 17)
+            {
+                macAddress = ID.ToUpper();
+            }
+            else
+            {
+                macAddress = ID.Substring(ID.Length - 17).ToUpper();
+            }
+            return macAddress;
+        }
 #if !WINDOWS_UWP
         private void OnDestroy()
         {

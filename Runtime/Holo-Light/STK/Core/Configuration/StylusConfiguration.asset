@@ -16,5 +16,5 @@ MonoBehaviour:
   UseBluetoothSettings: 0
   ReconnectAfterDisconnection: 0
   StartupBehavior: 1
-  ConnectToLastDevice: 1
-  IsEmulator: 1
+  ConnectToLastDevice: 0
+  IsEmulator: 0

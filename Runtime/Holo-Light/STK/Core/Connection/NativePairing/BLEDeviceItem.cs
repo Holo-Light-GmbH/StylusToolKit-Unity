@@ -8,7 +8,7 @@ namespace HoloLight.STK.Core
     /// </summary>
     internal class BLEDeviceItem : MonoBehaviour
     {
-        private NativePairingManager _pairingManager;
+        private HoloStylusManager _manager;
 
         private IBLEDevice _device;
 
@@ -17,19 +17,19 @@ namespace HoloLight.STK.Core
         [SerializeField]
         private TextMeshPro _deviceIdText;
 
-        internal void Init(IBLEDevice device, NativePairingManager pairingManager)
+        internal void Init(IBLEDevice device, HoloStylusManager manager)
         {
-            _pairingManager = pairingManager;
+            _manager = manager;
 
             _device = device;
 
             _deviceNameText.text = _device.Name;
-            _deviceIdText.text = pairingManager.GetCleanMACAddress(device.ID);
+            _deviceIdText.text = _manager.GetCleanMACAddress(device.ID);
         }
 
         public void Connect()
         {
-            _pairingManager.Connect(_device);
+            _manager.ConnectToHMU(_device);
         }
     }
 }

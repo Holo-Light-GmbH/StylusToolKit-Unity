@@ -160,6 +160,7 @@ namespace HoloLight.STK.MRTK
             {
                 DisableCursor();
                 DisableRay();
+                EnableAllHandPointers(Handedness.Both);
             }
         }
 
@@ -479,6 +480,10 @@ namespace HoloLight.STK.MRTK
 
         public void OnSourceLost(SourceStateEventData eventData)
         {
+            if (eventData.InputSource.SourceName.Contains("Stylus"))
+            {
+                DisablePointer(PointerType.All);
+            }
         }
     }
 }

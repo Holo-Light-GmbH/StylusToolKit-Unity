@@ -95,14 +95,18 @@ namespace HoloLight.STK.Features.Drawing
             _holoStylusManager.PointerSwitcher.EnablePointer(StylusPointerSwitcher.PointerType.StylusRayPointer);
             _inputACTIONHandler.enabled = false;
 
-            OnHoldEnd();
+            OnStopDrawing();
         }
 
-        public void OnHoldStarted()
+        public void OnHoldStarted(BaseInputEventData inputEventData)
         {
-            _isDrawing = true;
+            // Drawing should trigger only when the Stylus triggers the "Select" Action
+            if (inputEventData.InputSource.SourceName.Contains("Stylus"))
+            {
+                _isDrawing = true;
 
-            CreateLineRendereObject();
+                CreateLineRendereObject();
+            }
         }
 
         private void CreateLineRendereObject()
@@ -122,8 +126,16 @@ namespace HoloLight.STK.Features.Drawing
             _lineRenderer.numCapVertices = 5; // roundiness of the ends
             _lineRenderer.numCornerVertices = 5;
         }
+         
+        public void OnHoldEnd(BaseInputEventData inputEventData)
+        {
+            if (inputEventData.InputSource.SourceName.Contains("Stylus"))
+            {
+                OnStopDrawing();
+            }
+        }
 
-        public void OnHoldEnd()
+        private void OnStopDrawing()
         {
             _isDrawing = false;
             if (_lineRenderer)

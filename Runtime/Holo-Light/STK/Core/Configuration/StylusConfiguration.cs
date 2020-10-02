@@ -15,7 +15,7 @@ namespace HoloLight.STK.Core
         [SerializeField]
         [Tooltip("Smoothnessfactor. The lower the value the smoother it will move. But that means that the reaction is slower")]
         private float _smoothness = 28;
-        public float Smoothness => _smoothness;
+        public float Smoothness { get => _smoothness; set => _smoothness = value; }
 
         [Tooltip("If set to true, you have to pair the device in the Bluetooth Settings and then start the Application")]
         [SerializeField]

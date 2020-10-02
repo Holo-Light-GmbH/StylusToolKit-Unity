@@ -101,34 +101,37 @@ namespace HoloLight.STK.Features.Measurement
             }
         }
 
-        public void OnStylusActionClick()
+        public void OnStylusActionClick(BaseInputEventData inputEventData)
         {
-            Vector3 currentPosition = _holoStylusManager.StylusTransform.Position;
-            if (CheckMeasurement(currentPosition))
+            if (inputEventData.InputSource.SourceName.Contains("Stylus"))
             {
-                _clickCounter++;
-                GetActivePoint().AddPoint(currentPosition);
-                if (_clickCounter == ClicksPerPoint)
+                Vector3 currentPosition = _holoStylusManager.StylusTransform.Position;
+                if (CheckMeasurement(currentPosition))
                 {
-                    _currentMeasurement = new Measurement();
-                    _currentMeasurement.Visualizer = Visualizer;
-                    _currentMeasurement.AddPoint(GetActivePoint().AveragedPoint);
-                }
+                    _clickCounter++;
+                    GetActivePoint().AddPoint(currentPosition);
+                    if (_clickCounter == ClicksPerPoint)
+                    {
+                        _currentMeasurement = new Measurement();
+                        _currentMeasurement.Visualizer = Visualizer;
+                        _currentMeasurement.AddPoint(GetActivePoint().AveragedPoint);
+                    }
 
-                else if (_clickCounter == 2 * ClicksPerPoint)
-                {
-                    _currentMeasurement.AddPoint(GetActivePoint().AveragedPoint);
-                    _clickCounter = 0;
-                    _startPoint.Destroy();
-                    _endPoint.Destroy();
-                    _startPoint = null;
-                    _endPoint = null;
+                    else if (_clickCounter == 2 * ClicksPerPoint)
+                    {
+                        _currentMeasurement.AddPoint(GetActivePoint().AveragedPoint);
+                        _clickCounter = 0;
+                        _startPoint.Destroy();
+                        _endPoint.Destroy();
+                        _startPoint = null;
+                        _endPoint = null;
 
-                    GameObject lineContainer = _currentMeasurement.GetGameObject();
-                    lineContainer.transform.parent = _measurementsContainer.transform;
+                        GameObject lineContainer = _currentMeasurement.GetGameObject();
+                        lineContainer.transform.parent = _measurementsContainer.transform;
 
-                    _measurementStack.Push(_currentMeasurement);
-                    _currentMeasurement = null;
+                        _measurementStack.Push(_currentMeasurement);
+                        _currentMeasurement = null;
+                    }
                 }
             }
         }

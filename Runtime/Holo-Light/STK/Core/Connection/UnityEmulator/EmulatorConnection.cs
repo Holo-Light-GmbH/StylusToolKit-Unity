@@ -2,6 +2,7 @@
 #if UNITY_EDITOR
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 namespace HoloLight.STK.Core.Emulator
@@ -12,6 +13,8 @@ namespace HoloLight.STK.Core.Emulator
         DataCallback _onStatusUpdate;
         ConnectedCallback _onHMUConnected;
         MouseStylusControl _mouseStylusControl;
+        DisConnectedCallback _onHMUDisconnected;
+        IBLEDevice _connectedDevice;
 
         public EmulatorConnection(MouseStylusControl mouseStylusControl)
         {
@@ -23,9 +26,9 @@ namespace HoloLight.STK.Core.Emulator
             _onStatusUpdate?.Invoke(e.StylusData.RawData);
         }
 
-        public async void Connect(IBLEDevice Device)
+        public async void Connect(IBLEDevice device)
         {
-            DeviceInformation deviceInformation = ((EmulatorBLEDevice)Device).DeviceInformation;
+            DeviceInformation deviceInformation = ((EmulatorBLEDevice)device).DeviceInformation;
             var config = new StylusConfig(1, deviceInformation.Id);
             _stylus = new StylusControl(config);
             await _stylus.ConnectDevice(deviceInformation);
@@ -34,7 +37,8 @@ namespace HoloLight.STK.Core.Emulator
                 throw new System.Exception("Connection Failed");
             }
 
-            _onHMUConnected?.Invoke(Device);
+            _connectedDevice = device;
+            _onHMUConnected?.Invoke(device);
             _stylus.StatusChanged += OnStatusChanged;
         }
 
@@ -83,6 +87,17 @@ namespace HoloLight.STK.Core.Emulator
         public void Disconnect()
         {
             _mouseStylusControl.DeActivate();
+            _onHMUDisconnected?.Invoke(_connectedDevice);
+        }
+
+        public void RegisterDisconnectCallback(DisConnectedCallback Callback)
+        {
+            _onHMUDisconnected += Callback;
+        }
+
+        public void UnRegisterDisconnectCallback(DisConnectedCallback Callback)
+        {
+            _onHMUDisconnected -= Callback;
         }
     }
 

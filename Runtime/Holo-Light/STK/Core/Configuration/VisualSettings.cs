@@ -51,7 +51,10 @@ namespace HoloLight.STK.Core
         /// <param name="newScale">The scale of the Stylus Tip</param>
         public void SetScale(float newScale)
         {
-            _tipCursor.transform.localScale = new Vector3(newScale, newScale, newScale);
+            if (_tipCursor != null)
+            {
+                _tipCursor.transform.localScale = new Vector3(newScale, newScale, newScale);
+            }
         }
 
         /// <summary>
@@ -68,7 +71,14 @@ namespace HoloLight.STK.Core
         /// <param name="newColor">The new Color of the Stylus Tip</param>
         public void SetColor(Color newColor)
         {
-            _tipCursor.GetComponentInChildren<MeshRenderer>().material.color = newColor;
+            if (_tipCursor != null)
+            {
+                var rend = _tipCursor.GetComponentInChildren<MeshRenderer>();
+                if (rend != null)
+                {
+                    rend.material.color = newColor;
+                }
+            }
         }
 
         /// <summary>

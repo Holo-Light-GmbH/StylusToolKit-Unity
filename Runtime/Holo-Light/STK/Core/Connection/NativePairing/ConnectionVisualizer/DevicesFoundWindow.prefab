@@ -496,7 +496,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: No devices found!
+  m_text: Searching ...
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 27628074e4c3a5445a8adf21c5ae0748, type: 2}
   m_sharedMaterial: {fileID: 21722682793296054, guid: 27628074e4c3a5445a8adf21c5ae0748,

@@ -31,9 +31,9 @@ namespace HoloLight.STK.MRTK
         /// <remarks>A single interaction mapping works for both left and right controllers.</remarks>
         public override MixedRealityInteractionMapping[] DefaultInteractions { get; } = new[]
         {
-            new MixedRealityInteractionMapping(0, "StylusPosition", AxisType.SixDof, DeviceInputType.StylusPointer),
-            new MixedRealityInteractionMapping(1, "ActionButton", AxisType.Digital, DeviceInputType.StylusAction),
-            new MixedRealityInteractionMapping(2, "BackButton", AxisType.Digital, DeviceInputType.StylusBack),
+            new MixedRealityInteractionMapping(0, "Stylus Pose", AxisType.SixDof, DeviceInputType.StylusPointer),
+            new MixedRealityInteractionMapping(1, "Stylus Action", AxisType.Digital, DeviceInputType.Select),
+            new MixedRealityInteractionMapping(2, "Stylus Back", AxisType.Digital, DeviceInputType.StylusBack),
         };
 
         private MixedRealityPose controllerPose = MixedRealityPose.ZeroIdentity;
@@ -54,24 +54,24 @@ namespace HoloLight.STK.MRTK
                 {
                     if (inputActions[j].Description.Contains("Stylus"))
                     {
-                        if (inputActions[j].Description.Contains("Pose") && DefaultInteractions[i].Description == "StylusPosition")
+                        if (inputActions[j].Description.Contains("Pose") && DefaultInteractions[i].Description == "Stylus Pose")
                         {
                             mixedRealityAction = inputActions[j];
                             break;
                         }
 
-                        if (inputActions[j].Description.Contains("Action") && DefaultInteractions[i].Description == "ActionButton")
-                        {
-                            mixedRealityAction = inputActions[j];
-                            break;
-
-                        }
-
-                        if (inputActions[j].Description.Contains("Back") && DefaultInteractions[i].Description == "BackButton")
+                        if (inputActions[j].Description.Contains("Back") && DefaultInteractions[i].Description == "Stylus Back")
                         {
                             mixedRealityAction = inputActions[j];
                             break;
                         }
+                    }
+
+
+                    if (inputActions[j].Description.Contains("Select") && DefaultInteractions[i].Description == "Stylus Action")
+                    {
+                        mixedRealityAction = inputActions[j];
+                        break;
                     }
                 }
 
@@ -146,7 +146,7 @@ namespace HoloLight.STK.MRTK
                 if (Interactions[i].AxisType == AxisType.Digital)
                 {
                     bool keyButton = false;
-                    if (Interactions[i].InputType == DeviceInputType.StylusAction)
+                    if (Interactions[i].InputType == DeviceInputType.Select)
                     {
                         keyButton = StylusData.Buttons[0]; // ACTION BUTTON
                     }

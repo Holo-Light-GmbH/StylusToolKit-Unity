@@ -13,6 +13,7 @@ namespace HoloLight.STK.Core
 {
     public delegate void DataCallback(byte[] data);
     public delegate void ConnectedCallback(IBLEDevice device);
+    public delegate void DisConnectedCallback(IBLEDevice disconnectedDevice);
 
     public delegate void DFUFinished();
     public delegate void DFUProgressChanged(float progress);
@@ -25,6 +26,8 @@ namespace HoloLight.STK.Core
         void UnRegisterDataCallback(DataCallback Callback);
         void RegisterDataCallback(ConnectedCallback Callback);
         void UnRegisterDataCallback(ConnectedCallback Callback);
+        void RegisterDisconnectCallback(DisConnectedCallback Callback);
+        void UnRegisterDisconnectCallback(DisConnectedCallback Callback);
         void SendData(byte[] sendData);
         StylusControl GetStylusControl();
     }

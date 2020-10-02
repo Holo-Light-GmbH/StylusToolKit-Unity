@@ -82,6 +82,10 @@ namespace HoloLight.STK.Core
 
         public void PushNewBatteryData(int percentageValue)
         {
+            if (_lastFrame == null)
+            {
+                _lastFrame = new StylusData();
+            }
             _lastFrame.BatteryPercentage = percentageValue;
             FireEvent(StylusEventType.OnStylusBatteryValue, _lastFrame);
         }

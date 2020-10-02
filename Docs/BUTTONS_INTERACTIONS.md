@@ -12,12 +12,12 @@ If you are not familar with the Interactable Component, first have a look here [
 
 ## How to configure Interactable Component so it reacts to Stylus Button Interactions
 
-Select the `Stylus Action` from the Input Actions list so it triggers ONLY on the ACTION (Front) Button. That's all :slightly_smiling_face: When you select the `Stylus Back` it will trigger when you press the BACK Button.
+Choose the `Select` from the Input Actions list so the interactable triggers on the (Front) Stylus Button. That's all :slightly_smiling_face: When you select the `Stylus Back` it will trigger when you press the BACK Button.
 
-> :information_source: If you want it to trigger as well with e.g. Hand Gestures then have a look here ([Using Stylus with other Controllers](STYLUS_CONTROLLER.md))
+> :information_source: If you want it to trigger as well with e.g. Hand Gestures then have a look here ([Using Stylus with other Controllers (deprecated since v1.0.4)](STYLUS_CONTROLLER.md))
 
 <p align="center">
-	<img src="imgs/InteractableStylusAction.png" width="70%">
+	<img src="imgs/InteractableStylusSelect.png" width="60%">
 </p>
 
 ## How to configure Pressable Buttons to work by pressing it with the Stylus Tip 
@@ -27,14 +27,9 @@ Select the `Stylus Action` from the Input Actions list so it triggers ONLY on th
 	<img src="imgs/PushableButton2.png" width="35%" style="display: inline">
 </p>
 
+Good news! You don't have change anything. If the Input Action is set to `Select` of the Interactable Compontent where the PressableButton is attached to, it will react if the Stylus Tip presses that button. There you go :slightly_smiling_face:
+
 A good reference for the pressable buttons is [MRTK Pressable Buttons](https://microsoft.github.io/MixedRealityToolkit-Unity/Documentation/README_Button.html#collider-based-buttons-1)
-
-Just change the Input Action to `Stylus Action` of the Interactable Compontent where the PressableButton is attached to. There you go :slightly_smiling_face:
-
-
-<p align="center">
-	<img src="imgs/PushableButton3.png" width="70%">
-</p>
 
 ## How to use Bounding Box and Manipulation Handler
 

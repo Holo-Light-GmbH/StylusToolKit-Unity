@@ -1,5 +1,6 @@
 ﻿
 using HoloLight.STK.MRTK;
+using Microsoft.MixedReality.Toolkit.Input;
 using UnityEngine;
 using static HoloLight.STK.Core.CalibrationPreferences;
 
@@ -101,33 +102,41 @@ namespace HoloLight.STK.Core
             UpdateOffset(resetCoordinates, resetRotation);
         }
 
-        public void OnButtonDown(int BUTTON_ID)
+        public void OnButtonDown(BaseInputEventData inputEventData)
         {
-            if (BUTTON_ID == (int)_triggerOn)
+            if (inputEventData.InputSource.SourceName.Contains("Stylus"))
             {
-                _cursorOldTransform = _stylusCursor.transform.parent;
-                _stylusCursor.transform.parent = _camera.transform;
+                string compareToString = _triggerOn == 0 ? "Select" : "Stylus Back";
+                if (inputEventData.MixedRealityInputAction.Description.Contains(compareToString))
+                {
+                    _cursorOldTransform = _stylusCursor.transform.parent;
+                    _stylusCursor.transform.parent = _camera.transform;
 
-                _manager.PointerSwitcher.DisablePointer(StylusPointerSwitcher.PointerType.StylusRayPointer);
-                _startPosition = _camera.transform.InverseTransformPoint(_stylusCursor.transform.position);
-                _startRotation = _manager.StylusTransform.RawRotation;
+                    _manager.PointerSwitcher.DisablePointer(StylusPointerSwitcher.PointerType.StylusRayPointer);
+                    _startPosition = _camera.transform.InverseTransformPoint(_stylusCursor.transform.position);
+                    _startRotation = _manager.StylusTransform.RawRotation;
 
-                _stylusController.DisablePositionChanges();
+                    _stylusController.DisablePositionChanges();
+                }
             }
         }
 
-        public void OnButtonUp(int BUTTON_ID)
+        public void OnButtonUp(BaseInputEventData inputEventData)
         {
-            if (BUTTON_ID == (int)_triggerOn)
+            if (inputEventData.InputSource.SourceName.Contains("Stylus"))
             {
-                _manager.PointerSwitcher.EnablePointer(StylusPointerSwitcher.PointerType.StylusRayPointer);
-                Vector3 newPositionOffset = _camera.transform.InverseTransformPoint(_manager.StylusTransform.Position) - _startPosition;
-                Vector3 newRotationOffset = _manager.StylusTransform.RawRotation - _startRotation;
+                string compareToString = _triggerOn == 0 ? "Select" : "Stylus Back";
+                if (inputEventData.MixedRealityInputAction.Description.Contains(compareToString))
+                {
+                    _manager.PointerSwitcher.EnablePointer(StylusPointerSwitcher.PointerType.StylusRayPointer);
+                    Vector3 newPositionOffset = _camera.transform.InverseTransformPoint(_manager.StylusTransform.Position) - _startPosition;
+                    Vector3 newRotationOffset = _manager.StylusTransform.RawRotation - _startRotation;
 
-                UpdateOffset(newPositionOffset, newRotationOffset);
+                    UpdateOffset(newPositionOffset, newRotationOffset);
 
-                _stylusController.EnablePositionChanges();
-                _stylusCursor.transform.parent = _cursorOldTransform;
+                    _stylusController.EnablePositionChanges();
+                    _stylusCursor.transform.parent = _cursorOldTransform;
+                }
             }
         }
 

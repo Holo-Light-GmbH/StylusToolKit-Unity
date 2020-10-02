@@ -108,7 +108,7 @@ namespace HoloLight.UnityDriver
 
                 if (Res != BluetoothErrors.WCL_E_SUCCESS)
                 {
-                    Debug.Log("Failed to open Bluetooth Manager: 0x" + Res.ToString("X8"));
+                //    Debug.Log("Failed to open Bluetooth Manager: 0x" + Res.ToString("X8"));
                 }
             }
 

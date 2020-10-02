@@ -21,6 +21,7 @@ namespace HoloLight.STK.Core
         private StylusControl _stylus;
         DataCallback _onStatusUpdate;
         ConnectedCallback _onHMUConnected;
+        private DisConnectedCallback _onHMUDisconnected;
 
         private bool _isConnecting = false;
         private IBLEDevice _device = null;
@@ -41,6 +42,11 @@ namespace HoloLight.STK.Core
             _onHMUConnected?.Invoke(_device);
         }
 
+        private void OnDisconnected() 
+        {
+            _onHMUDisconnected?.Invoke(_device);
+        }
+
         public async void Connect(IBLEDevice Device)
         {
             if (_isConnecting) return;
@@ -49,6 +55,7 @@ namespace HoloLight.STK.Core
             {
                 _stylus.StatusChanged -= OnStatusChanged;
                 _stylus.StatusChanged -= OnFirstValueRecieved;
+                _stylus.OnDisconnected -= OnDisconnected;
                 _stylus = null;
             }
             try 
@@ -65,6 +72,7 @@ namespace HoloLight.STK.Core
                 _device = Device;
                 _stylus.StatusChanged += OnStatusChanged;
                 _stylus.StatusChanged += OnFirstValueRecieved;
+                _stylus.OnDisconnected += OnDisconnected;
             } 
             catch (Exception e) 
             {
@@ -114,6 +122,17 @@ namespace HoloLight.STK.Core
         public void Disconnect() 
         {
             _stylus.CloseConnection();    
+        }
+
+        
+        public void RegisterDisconnectCallback(DisConnectedCallback Callback)
+        {
+            _onHMUDisconnected += Callback;
+        }
+
+        public void UnRegisterDisconnectCallback(DisConnectedCallback Callback)
+        {
+            _onHMUDisconnected -= Callback;
         }
     }
 }

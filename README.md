@@ -17,9 +17,10 @@ Have a look at our [Quick Start Guide](https://support.holo-light.com/hc/en-us/a
 
 * [Setup Scene for Stylus XR](Docs/SETUP_SCENE.md)
 * [Buttons & Interaction Components](Docs/BUTTONS_INTERACTIONS.md)
-* [Using Stylus XR with other Controllers](Docs/STYLUS_CONTROLLER.md)
 * [Configuring MRTK Profiles for Stylus XR](Docs/STYLUS_PROFILES.md)
 * [Stylus XR Configurations](Docs/STYLUS_CONFIGS.md)
+* [Stylus XR User Interface](Docs/STYLUS_UI.md)
+* [Using Stylus XR with other Controllers (deprecated starting from v1.0.4)](Docs/STYLUS_CONTROLLER.md)
 - EVENTS
 	- [OnConnected/OnDisconnected](Docs/EVENTS_ONCONNECT.md)
 	- [OnClick/OnHold/OnPress/...](Docs/EVENTS_ONCLICKHOLD.md)

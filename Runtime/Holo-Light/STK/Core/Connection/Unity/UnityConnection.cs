@@ -11,6 +11,10 @@ namespace HoloLight.UnityDriver
         private StylusControl _stylus;
         DataCallback _onStatusUpdate;
         ConnectedCallback _onHMUConnected;
+        /// <summary>
+        /// Unity Driver doesn't yet support OnDisconnected event
+        /// </summary>
+        DisConnectedCallback _onHMUDisconnected;
 
         UnityBLEDevice connectedDevice;
         UnityBLEDevice connectingDevice;
@@ -23,7 +27,6 @@ namespace HoloLight.UnityDriver
         public UnityConnection()
         {
             _stylus = new StylusControl();
-            _stylus.StatusChanged += _stylus_StatusChanged;
         }
 
         private void _stylus_StatusChanged(byte[] data)
@@ -34,6 +37,8 @@ namespace HoloLight.UnityDriver
         public void Connect(IBLEDevice device)
         {
             if (_isConnecting) return;
+
+            //_stylus.Init();
             _isConnecting = true;
             connectingDevice = (UnityBLEDevice)device;
             DeviceInformation deviceInformation = connectingDevice.DeviceInformation;
@@ -43,11 +48,12 @@ namespace HoloLight.UnityDriver
 
             if (!_handlersRegistered)
             {
+                _stylus.StatusChanged += _stylus_StatusChanged;
                 _stylus.OnConnected += _stylus_OnConnected;
+                _stylus.OnDisconnected += _stylus_OnDisConnected;
             }
 
             _handlersRegistered = true;
-
 
             try
             {
@@ -60,6 +66,17 @@ namespace HoloLight.UnityDriver
             finally
             {
                 _isConnecting = false;
+            }
+        }
+        private void _stylus_OnDisConnected()
+        {
+            if (_isConnected)
+            {
+                _isConnected = false;
+                _handlersRegistered = false;
+                _stylus.StatusChanged -= _stylus_StatusChanged;
+                _stylus.OnDisconnected -= _stylus_OnDisConnected;
+                _onHMUDisconnected?.Invoke(connectedDevice);
             }
         }
 
@@ -111,8 +128,19 @@ namespace HoloLight.UnityDriver
         {
             if (_stylus.StylusManager.Client != null)
             {
-                _stylus.CloseConnection();
+                _stylus.StylusManager.Client.Disconnect();
+                _stylus.StylusManager.Manager.Close();
             }
+        }
+
+        public void RegisterDisconnectCallback(DisConnectedCallback Callback)
+        {
+            _onHMUDisconnected += Callback;
+        }
+
+        public void UnRegisterDisconnectCallback(DisConnectedCallback Callback)
+        {
+            _onHMUDisconnected -= Callback;
         }
     }
 #endif

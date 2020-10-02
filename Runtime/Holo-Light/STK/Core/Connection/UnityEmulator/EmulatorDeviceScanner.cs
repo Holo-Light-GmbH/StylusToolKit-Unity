@@ -32,7 +32,7 @@ namespace HoloLight.STK.Core.Emulator
             EmulatorBLEDevice newEmulatorBleDevice = new EmulatorBLEDevice();
             DeviceInformation newDeviceInformation = new DeviceInformation();
             newDeviceInformation.Name = "EMULATOR_HMU_V_2";
-            newDeviceInformation.Id = "AA:BB:CC:DD:EE:DD";
+            newDeviceInformation.Id = "AA:BB:CC:DD:EE:FF";
 
             DeviceInformationPairing pairingInfo = new DeviceInformationPairing();
             pairingInfo.IsPaired = true;

@@ -11,6 +11,8 @@ To take advantage of Stylus XR’s various capabilities, have a look at [Getting
 
 > :white_check_mark: Fully MRTK 2.3 & 2.4 Compatible
 
+> :white_check_mark: For MRTK 2.5 read the guide [here](Docs/MRTK25.md)
+
 Have a look at our [Quick Start Guide](https://support.holo-light.com/hc/en-us/articles/360015956079), which helps you on getting started with setup the device correctly for first use.
 
 ## Docs
@@ -21,6 +23,7 @@ Have a look at our [Quick Start Guide](https://support.holo-light.com/hc/en-us/a
 * [Stylus XR Configurations](Docs/STYLUS_CONFIGS.md)
 * [Stylus XR User Interface](Docs/STYLUS_UI.md)
 * [Using Stylus XR with other Controllers (deprecated starting from v1.0.4)](Docs/STYLUS_CONTROLLER.md)
+* [Upgrading to newer MRTK Version](Docs/MRTK25.md)
 - EVENTS
 	- [OnConnected/OnDisconnected](Docs/EVENTS_ONCONNECT.md)
 	- [OnClick/OnHold/OnPress/...](Docs/EVENTS_ONCLICKHOLD.md)

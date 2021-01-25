@@ -29,8 +29,8 @@ Go to `Player Settings → Publishing Settings → Capabilities` and make sure t
 
 Just press Play to test the Scene in Unity Editor. At the first time, you need to select the EMULATOR_HMU_V_2 by holding the Left-Shift-Button and confirming with the Left-Mouse-Click. Next time it will skip this step, because it remembers with which Device you were connected (it saved a file called SavedDeviceID.hmu inside the Application Data Folder). Then you should see the Stylus Pointer in the scene view of Unity, which is simulating the Stylus tip, when you move your mouse.
 You can move the cursor in z direction by pressing the Z (z+) and H (z-) keys of the keyboard (you can change them in **StylusMixedRealityInputProfile**). The Left-Mouse-Button simulates the ACTION button and the Right-Mouse-Button the BACK button.
-This is the most simplest working Stylus Scene. 
-Now you can start adding your content and built your project or explore the example scenes and see what is possible :slightly_smiling_face:
+This is the most simple working Stylus Scene. 
+Now you can start adding your content and build your project or explore the example scenes and see what is possible :slightly_smiling_face:
 
 ### Building and deploying it to HoloLens (UWP)
 Build the project as you would build for a normal HoloLens application.

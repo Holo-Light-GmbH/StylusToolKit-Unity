@@ -9,15 +9,13 @@ namespace HoloLight.UnityDriver
     public class UnityConnection : IConnection
     {
         private StylusControl _stylus;
-        DataCallback _onStatusUpdate;
-        ConnectedCallback _onHMUConnected;
-        /// <summary>
-        /// Unity Driver doesn't yet support OnDisconnected event
-        /// </summary>
-        DisConnectedCallback _onHMUDisconnected;
+        private DataCallback _onStatusUpdate;
+        private ConnectedCallback _onHMUConnected;
 
-        UnityBLEDevice connectedDevice;
-        UnityBLEDevice connectingDevice;
+        private DisConnectedCallback _onHMUDisconnected;
+
+        private UnityBLEDevice _connectedDevice;
+        private UnityBLEDevice _connectingDevice;
 
         private bool _isConnecting = false;
         private bool _handlersRegistered = false;
@@ -38,18 +36,16 @@ namespace HoloLight.UnityDriver
         {
             if (_isConnecting) return;
 
-            //_stylus.Init();
             _isConnecting = true;
-            connectingDevice = (UnityBLEDevice)device;
-            DeviceInformation deviceInformation = connectingDevice.DeviceInformation;
+            _connectingDevice = (UnityBLEDevice)device;
+            DeviceInformation deviceInformation = _connectingDevice.DeviceInformation;
             var config = new StylusConfig(1, deviceInformation.DeviceID);
 
             _stylus.SetConfig(config);
 
             if (!_handlersRegistered)
             {
-                _stylus.StatusChanged += _stylus_StatusChanged;
-                _stylus.OnConnected += _stylus_OnConnected;
+                _stylus.StatusChanged += _stylus_FirstDataRecieved;
                 _stylus.OnDisconnected += _stylus_OnDisConnected;
             }
 
@@ -57,7 +53,9 @@ namespace HoloLight.UnityDriver
 
             try
             {
-                _stylus.ConnectingtoDevice(connectingDevice.ID);
+                _stylus.ConnectToDevice(_connectingDevice.ID);
+
+
             }
             catch (Exception e)
             {
@@ -68,6 +66,15 @@ namespace HoloLight.UnityDriver
                 _isConnecting = false;
             }
         }
+
+        private void _stylus_FirstDataRecieved(byte[] data)
+        {
+            // is connected only, when first data recieved...
+            _stylus.StatusChanged -= _stylus_FirstDataRecieved;
+            _stylus.StatusChanged += _stylus_StatusChanged;
+            _stylus_OnConnected();
+        }
+
         private void _stylus_OnDisConnected()
         {
             if (_isConnected)
@@ -76,17 +83,17 @@ namespace HoloLight.UnityDriver
                 _handlersRegistered = false;
                 _stylus.StatusChanged -= _stylus_StatusChanged;
                 _stylus.OnDisconnected -= _stylus_OnDisConnected;
-                _onHMUDisconnected?.Invoke(connectedDevice);
+                _onHMUDisconnected?.Invoke(_connectedDevice);
             }
         }
 
         private void _stylus_OnConnected()
         {
-            _stylus.OnConnected -= _stylus_OnConnected;
+           // _stylus.OnConnected -= _stylus_OnConnected;
             _handlersRegistered = false;
-            connectedDevice = connectingDevice;
+            _connectedDevice = _connectingDevice;
             _isConnected = true;
-            _onHMUConnected?.Invoke(connectedDevice);
+            _onHMUConnected?.Invoke(_connectedDevice);
         }
 
         public StylusControl GetStylusControl()
@@ -126,10 +133,9 @@ namespace HoloLight.UnityDriver
 
         public void Disconnect()
         {
-            if (_stylus.StylusManager.Client != null)
+            if (_stylus.StylusManager != null)
             {
-                _stylus.StylusManager.Client.Disconnect();
-                _stylus.StylusManager.Manager.Close();
+                _stylus.CloseConnection();
             }
         }
 

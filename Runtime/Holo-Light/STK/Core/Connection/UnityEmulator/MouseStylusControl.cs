@@ -17,7 +17,6 @@ namespace HoloLight.STK.Core.Emulator
         /// </summary>
         private StylusMixedRealityInputProfile profile;
 
-
         // Current depth of the tip
         private float _currentDepth;
 

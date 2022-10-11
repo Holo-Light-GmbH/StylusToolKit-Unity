@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 90b1b3ebf30184d46b0e6911ae910bd1, type: 3}
   m_Name: StylusConfiguration
   m_EditorClassIdentifier: 
-  _smoothness: 30
+  _responsiveness: 30
   UseBluetoothSettings: 0
   ReconnectAfterDisconnection: 0
   StartupBehavior: 1
-  ConnectToLastDevice: 0
+  ConnectToLastDevice: 1
   IsEmulator: 1

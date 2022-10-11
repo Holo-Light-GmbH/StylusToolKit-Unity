@@ -101,8 +101,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   isFocusRequired: 0
   InputAction:
-    id: 18
-    description: Stylus Back
+    id: 2
+    description: Menu
     axisConstraint: 2
   MarkEventsAsUsed: 0
   OnInputActionStarted:

@@ -175,8 +175,8 @@ MonoBehaviour:
   destroyOnSourceLost: 0
   useSourcePoseData: 0
   poseAction:
-    id: 16
-    description: Stylus Pose
+    id: 4
+    description: Pointer Pose
     axisConstraint: 7
   handedness: 1
   cursorPrefab: {fileID: 3455979907861255611, guid: 0dfb488855b8c17498993a5ed7ef13cf,
@@ -192,6 +192,10 @@ MonoBehaviour:
     id: 1
     description: Select
     axisConstraint: 2
+  grabAction:
+    id: 0
+    description: None
+    axisConstraint: 0
   requiresHoldAction: 0
   requiresActionBeforeEnabling: 0
   overrideGlobalPointerExtent: 0

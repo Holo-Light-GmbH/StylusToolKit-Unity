@@ -13,9 +13,9 @@ namespace HoloLight.STK.Core
 
         [Range(10f, 50f)]
         [SerializeField]
-        [Tooltip("Smoothnessfactor. The lower the value the smoother it will move. But that means that the reaction is slower")]
-        private float _smoothness = 28;
-        public float Smoothness { get => _smoothness; set => _smoothness = value; }
+        [Tooltip("Responsiveness Factor. The higher the value, the faster it will react to position changes. The lower the value the smoother it will react.")]
+        private float _responsiveness = 30;
+        public float Responsiveness { get => _responsiveness; set => _responsiveness = value; }
 
         [Tooltip("If set to true, you have to pair the device in the Bluetooth Settings and then start the Application")]
         [SerializeField]
@@ -24,6 +24,10 @@ namespace HoloLight.STK.Core
         [Tooltip("If set to true, it will try to reconnect, when the HMU disconnects for whatever reason.")]
         [SerializeField]
         public bool ReconnectAfterDisconnection = false;
+
+        [Tooltip("If set to true, it won't read the NNF everytime on every connection.")]
+        [SerializeField]
+        public bool AllowFastConnection = true;
 
         [Tooltip("Should searching/connecting to Stylus happen automatically after start or manully?")]
         [SerializeField]

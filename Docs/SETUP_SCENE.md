@@ -7,6 +7,13 @@
 	<img src="imgs/StylusConfig1.PNG" width="75%">
 </p>
 
+* Beginning with v1.1 it is much easier to configure the Scene. Just choose `Holo-Light->Add Stylus Prefab` to add the prefab to your Scene.
+
+<p align="center">
+	<img src="imgs/StylusConfigMenu.PNG" width="80%">
+</p>
+
+
 * Now we just need to configure some MRTK Profiles. Select the **MixedRealityToolkit** object and change the **MixedRealityConfigurationProfile** → **StylusMixedRealityToolkitConfigurationProfile** (see next picture). 
 
 <p align="center">
@@ -28,7 +35,7 @@ Go to `Player Settings → Publishing Settings → Capabilities` and make sure t
 ## Ready to go!
 
 Just press Play to test the Scene in Unity Editor. At the first time, you need to select the EMULATOR_HMU_V_2 by holding the Left-Shift-Button and confirming with the Left-Mouse-Click. Next time it will skip this step, because it remembers with which Device you were connected (it saved a file called SavedDeviceID.hmu inside the Application Data Folder). Then you should see the Stylus Pointer in the scene view of Unity, which is simulating the Stylus tip, when you move your mouse.
-You can move the cursor in z direction by pressing the Z (z+) and H (z-) keys of the keyboard (you can change them in **StylusMixedRealityInputProfile**). The Left-Mouse-Button simulates the ACTION button and the Right-Mouse-Button the BACK button.
+You can move the cursor in z direction by pressing the Z (z+) and H (z-) on the keyboard (you can change them in **StylusMixedRealityInputProfile**). The Left-Mouse-Button simulates the ACTION/FRONT button and the Right-Mouse-Button the BACK button.
 This is the most simple working Stylus Scene. 
 Now you can start adding your content and build your project or explore the example scenes and see what is possible :slightly_smiling_face:
 
@@ -37,5 +44,4 @@ Build the project as you would build for a normal HoloLens application.
 
 
 ### Building and deploying it to PC (Standalone)
-
-When Deploying to Standalone, make sure to copy the “WclGattClientDll.dll” file into your built project folder or directly into C:\Windows\System32 Folder. The WclGattClientDll.dll file can be found inside “Holo-Light\STK\Core\Libs” 
+Make sure to change the Scripting Backend to "Mono". IL2CPP is not supported on the Standalone Platform. When Deploying to Standalone, make sure to copy the `WclGattClientDll.dll` file into your built project folder or directly into C:\Windows\System32 Folder. The WclGattClientDll.dll file can be found inside `Holo-Light\STK\Core\Libs`

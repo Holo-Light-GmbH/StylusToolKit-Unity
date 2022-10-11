@@ -1,7 +1,7 @@
 # Stylus XR User Interface
 
 When you look inside the **Stylus** prefab, there is another prefab called **StylusUI**.
-When this GameObject is in the Scene, you will get a out-of-the-box working UI Panel to list/connect to the devices.
+When this GameObject is in the Scene, you will get a out-of-the-box working UI Panel to list/connect to Stylus Devices.
 If you want to create your own UI, have a look inside `Holo-Light/STK/Core/Connection/StylusUI.cs`. There you can see how it is made.
 
 <p align="center">
@@ -23,4 +23,4 @@ There you can register for different types of events to handle your UI.
 ...just to name a few.
 <br>
 
-If you don't want the default UI, and want your customized version, just remove the **StylusUI** from your scene.
+If you don't want the default UI, and want your customized version, just remove the **StylusUI** from your Scene.

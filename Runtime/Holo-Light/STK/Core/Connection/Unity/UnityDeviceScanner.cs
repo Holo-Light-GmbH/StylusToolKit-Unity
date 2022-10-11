@@ -93,9 +93,9 @@ namespace HoloLight.UnityDriver
         {
             DeviceList.Clear();
 
-            if (_stylusManager.Manager == null)
+            if (_stylusManager == null)
             {
-                _stylusControl.Init();
+                _stylusControl.InitManager();
             }
 
             if (!_handlersRegistered)
@@ -108,7 +108,7 @@ namespace HoloLight.UnityDriver
 
                 if (Res != BluetoothErrors.WCL_E_SUCCESS)
                 {
-                //    Debug.Log("Failed to open Bluetooth Manager: 0x" + Res.ToString("X8"));
+                    Debug.Log("Failed to open Bluetooth Manager: 0x" + Res.ToString("X8"));
                 }
             }
 
@@ -117,6 +117,8 @@ namespace HoloLight.UnityDriver
 
         public void StopScanning()
         {
+            //_stylusManager.Manager.Close();
+            ///Debug.Log("Unity BLE Driver does not support stopping Device Search");
         }
 
         public void RegisterDeviceFoundCallback(DeviceFound callback)

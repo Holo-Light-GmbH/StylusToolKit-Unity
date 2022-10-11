@@ -56,7 +56,7 @@ namespace HoloLight.STK.Core
         {
             _calibrationPreferences = manager.CalibrationPreferences;
             _cameraTransform = Camera.main.transform;
-            _multiplier = manager.StylusConfiguration.Smoothness;
+            _multiplier = manager.StylusConfiguration.Responsiveness;
             _defaultMultiplier = _multiplier;
         }
 

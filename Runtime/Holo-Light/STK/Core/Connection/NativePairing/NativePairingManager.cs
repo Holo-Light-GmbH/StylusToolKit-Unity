@@ -38,6 +38,7 @@ namespace HoloLight.STK.Core
         private string _fullPath;
 
         private Coroutine _searching;
+        private bool _initialized = false;
 
         public void Init(HoloStylusManager manager)
         {
@@ -53,6 +54,8 @@ namespace HoloLight.STK.Core
             {
                 SavedDeviceID = File.ReadAllText(_fullPath, Encoding.UTF8);
             }
+
+            _initialized = true;
         }
 
         /// <summary>
@@ -108,6 +111,7 @@ namespace HoloLight.STK.Core
             _connectingtimeOut.Reset();
             _connectingtimeOut.Stop();
             StopCoroutine(_searching);
+            _searching = null;
             _manager.Connector.UnRegisterDataCallback(OnConnected);
 
             SaveID(connectedDevice.ID);
@@ -115,11 +119,12 @@ namespace HoloLight.STK.Core
 
         void Update()
         {
-            if (_connectingtimeOut.ElapsedMilliseconds > 8000 && !_manager.IsPaired)
+            if (_initialized && _connectingtimeOut.ElapsedMilliseconds > 8000 && !_manager.IsPaired)
             {
                 // trying to connect since 6s...no success
                 _connectingtimeOut.Reset();
                 _connectingtimeOut.Stop();
+                _manager.IsConnecting = false; 
                 // TODO invoke timeout event
                 _manager.OnConnectionTimeoutEvent();
             }
@@ -138,6 +143,17 @@ namespace HoloLight.STK.Core
                 StopCoroutine(_searching);
             }
             _searching = StartCoroutine(StopSearching());
+        }
+
+        public void StopDeviceSearch()
+        {
+            _hmuDevices.Clear();
+            if (_searching != null)
+            {
+                StopCoroutine(_searching);
+                _searching = null;
+            }
+            _manager.DeviceScanner.StopScanning();
         }
 
         /// <summary>

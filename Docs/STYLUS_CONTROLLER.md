@@ -1,6 +1,6 @@
 # Using Stylus XR with other Controllers (deprecated)
 
-<p style="color:#ff3300;font-size:24px; line-height: 24px">Beginning with STK v1.0.4 it is not needed to do this!!! The Front Button is mapped on `Select` Input Action!!! So the Stylus XR should work out of the box, when your interactables have the `Select` Input Action</p>
+<p style="color:#ff3300;font-size:24px; line-height: 24px">Beginning with STK v1.0.4 it is not needed to do this!!! The Front Button is mapped on `Select` Input Action!!! So the Stylus XR should work out of the box, if your interactables has the `Select` Input Action</p>
 
 In order to make the **Interactables** work with the standard Input Methods like, Gaze+Airtap, Handray, etc. in combination WITH the Stylus XR, then this guide will help you with it.
 

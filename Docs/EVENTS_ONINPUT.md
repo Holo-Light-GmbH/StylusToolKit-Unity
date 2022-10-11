@@ -1,6 +1,6 @@
 # OnInputDown/OnInputUp
 
-Add the InputActionHandler to your GameObject and select the Input Action Type `Select` or `Stylus Back`.
+Add the InputActionHandler to your GameObject and select the Input Action Type `Select (FRONT BUTTON)` or `Menu (BACK BUTTON)`.
 Configure if you want the events to trigger only if the GameObject is focused.
 <p align="center">
 	<img src="imgs/Event_OnInput.png" width="70%">

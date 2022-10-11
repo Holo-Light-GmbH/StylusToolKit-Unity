@@ -76,8 +76,8 @@ namespace HoloLight.STK.Core
 
         private void _manager_ConnectingStarted(object sender, IBLEDevice connectingDevice)
         {
-            _connectDevice = connectingDevice;
             _connecting = true;
+            _connectDevice = connectingDevice;
         }
 
         private void _manager_DeviceFoundEvent(object sender, IBLEDevice foundDevice)
@@ -103,7 +103,7 @@ namespace HoloLight.STK.Core
         /// <summary>
         /// Connects and displays the Connecting Window where you can see the name and ID of the device you are connecting to
         /// </summary>
-        private void ConnectGUI()
+        private void OpenConnectingWindow()
         {
             foundDevicesWindow.SetActive(false);
             _connectingWindow.SetActive(true);
@@ -116,6 +116,7 @@ namespace HoloLight.STK.Core
         /// </summary>
         private void ListFoundHMUDevices()
         {
+            if (_manager.IsConnecting) return;
             _pages.Clear();
             foreach (Transform child in _list.transform)
             {
@@ -209,7 +210,7 @@ namespace HoloLight.STK.Core
             if (_connecting)
             {
                 _connecting = false;
-                ConnectGUI();
+                OpenConnectingWindow();
             }
 
             if (_hideConnectingWindow)

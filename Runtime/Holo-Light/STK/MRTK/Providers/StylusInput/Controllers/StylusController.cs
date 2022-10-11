@@ -2,6 +2,7 @@
 using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.Utilities;
+using Unity.Profiling;
 using UnityEngine;
 using static HoloLight.STK.Core.CalibrationPreferences;
 
@@ -11,12 +12,11 @@ namespace HoloLight.STK.MRTK
     /// Implementation of Stylus Controller.
     /// </summary>
     [MixedRealityController(
-        SupportedControllerType.Stylus,
-        new[] { Handedness.Any },
+        SupportedControllerType.GenericUnity,
+        new[] { Handedness.Both },
         "Packages/com.hololight.stylustoolkit/Runtime/Holo-Light/STK/MRTK/Providers/StylusInput/Textures/StylusController")]
     public class StylusController : BaseController
     {
-
         /// <summary>
         /// Constructor.
         /// </summary>
@@ -31,68 +31,28 @@ namespace HoloLight.STK.MRTK
         /// <remarks>A single interaction mapping works for both left and right controllers.</remarks>
         public override MixedRealityInteractionMapping[] DefaultInteractions { get; } = new[]
         {
-            new MixedRealityInteractionMapping(0, "Stylus Pose", AxisType.SixDof, DeviceInputType.StylusPointer),
+            new MixedRealityInteractionMapping(0, "Stylus Pose", AxisType.SixDof, DeviceInputType.SpatialPointer),
             new MixedRealityInteractionMapping(1, "Stylus Action", AxisType.Digital, DeviceInputType.Select),
-            new MixedRealityInteractionMapping(2, "Stylus Back", AxisType.Digital, DeviceInputType.StylusBack),
+            new MixedRealityInteractionMapping(2, "Stylus Back", AxisType.Digital, DeviceInputType.Menu),
         };
 
-        private MixedRealityPose controllerPose = MixedRealityPose.ZeroIdentity;
+        private MixedRealityPose _controllerPose = MixedRealityPose.ZeroIdentity;
 
         public StylusData StylusData;
 
-        public override void SetupDefaultInteractions(Handedness controllerHandedness)
-        {
-            /// find the right InputActions and assign them to the Interactions...
-            MixedRealityInteractionMapping[] defaultInteractions = new MixedRealityInteractionMapping[DefaultInteractions.Length];
-            MixedRealityInputAction[] inputActions = CoreServices.InputSystem.InputSystemProfile.InputActionsProfile.InputActions;
+        private bool _enabled = true;
 
-            for (int i = 0; i < DefaultInteractions.Length; i++)
-            {
-                MixedRealityInputAction mixedRealityAction = MixedRealityInputAction.None;
-
-                for (int j = 0; j < inputActions.Length; j++)
-                {
-                    if (inputActions[j].Description.Contains("Stylus"))
-                    {
-                        if (inputActions[j].Description.Contains("Pose") && DefaultInteractions[i].Description == "Stylus Pose")
-                        {
-                            mixedRealityAction = inputActions[j];
-                            break;
-                        }
-
-                        if (inputActions[j].Description.Contains("Back") && DefaultInteractions[i].Description == "Stylus Back")
-                        {
-                            mixedRealityAction = inputActions[j];
-                            break;
-                        }
-                    }
-
-
-                    if (inputActions[j].Description.Contains("Select") && DefaultInteractions[i].Description == "Stylus Action")
-                    {
-                        mixedRealityAction = inputActions[j];
-                        break;
-                    }
-                }
-
-                MixedRealityInteractionMapping newInteraction = new MixedRealityInteractionMapping((uint)i, DefaultInteractions[i].Description, DefaultInteractions[i].AxisType, DefaultInteractions[i].InputType, mixedRealityAction);
-                defaultInteractions[i] = newInteraction;
-            }
-
-            AssignControllerMappings(defaultInteractions);
-        }
-
-
-        private bool enabled = true;
-
-        public StylusHoldingHand HoldingHand = StylusHoldingHand.Right;
+        /// <summary>
+        /// The actual hand holding the stylus. Can be only StylusHoldingHand.Left or .Right.
+        /// </summary>
+        public StylusHoldingHand HoldingHand { get; internal set; } = StylusHoldingHand.Right;
 
         /// <summary>
         /// The position will not be updated anymore when disabling this. (e.g. needed for the Calibration)
         /// </summary>
         public void DisablePositionChanges()
         {
-            enabled = false;
+            _enabled = false;
         }
 
         /// <summary>
@@ -100,76 +60,80 @@ namespace HoloLight.STK.MRTK
         /// </summary>
         public void EnablePositionChanges()
         {
-            enabled = true;
+            _enabled = true;
         }
+
+        private static readonly ProfilerMarker UpdatePerfMarker = new ProfilerMarker("[MRTK] StylusController.Update");
 
         /// <summary>
         /// Update controller.
         /// </summary>
         public void Update()
         {
-
-            for (int i = 0; i < Interactions?.Length; i++)
+            using (UpdatePerfMarker.Auto())
             {
-                if (Interactions[i].InputType == DeviceInputType.StylusPointer && enabled)
+                for (int i = 0; i < Interactions?.Length; i++)
                 {
-                    Vector3 stylusPosition = StylusData.Position;
-
-                    IsPositionAvailable = stylusPosition != Vector3.zero;
-
-                    Vector3 fromPosition = Camera.main.transform.position;
-                    Vector3 toPosition = stylusPosition;
-                    Vector3 direction;
-
-                    if (HoldingHand == StylusHoldingHand.Left)
+                    if (Interactions[i].InputType == DeviceInputType.SpatialPointer && _enabled)
                     {
-                        direction = toPosition - fromPosition + Camera.main.transform.up * 0.06f + Camera.main.transform.right * 0.08f;
-                    }
-                    else
-                    {
-                        direction = toPosition - fromPosition + Camera.main.transform.up * 0.06f + Camera.main.transform.right * -0.08f;
-                    }
-                    // Stylus pointer raises Pose events  
-                    controllerPose = MixedRealityPose.ZeroIdentity;
+                        Vector3 stylusPosition = StylusData.Position;
 
-                    controllerPose.Rotation = Quaternion.LookRotation(direction, Camera.main.transform.up);
-                    controllerPose.Position = stylusPosition;
+                        IsPositionAvailable = stylusPosition != Vector3.zero;
 
-                    Interactions[i].PoseData = controllerPose;
+                        Vector3 fromPosition = Camera.main.transform.position;
+                        Vector3 toPosition = stylusPosition;
+                        Vector3 direction;
 
-                    if (Interactions[i].Changed)
-                    {
-                        CoreServices.InputSystem.RaisePoseInputChanged(InputSource, ControllerHandedness, Interactions[i].MixedRealityInputAction, controllerPose);
-                    }
-                }
-
-                if (Interactions[i].AxisType == AxisType.Digital)
-                {
-                    bool keyButton = false;
-                    if (Interactions[i].InputType == DeviceInputType.Select)
-                    {
-                        keyButton = StylusData.Buttons[0]; // ACTION BUTTON
-                    }
-
-                    if (Interactions[i].InputType == DeviceInputType.StylusBack)
-                    {
-                        keyButton = StylusData.Buttons[1]; // BACK BUTTON
-                    }
-
-                    // Update the interaction data source
-                    Interactions[i].BoolData = keyButton;
-
-                    // If our value changed raise it.
-                    if (Interactions[i].Changed)
-                    {
-                        // Raise input system event if it's enabled
-                        if (Interactions[i].BoolData)
+                        if (HoldingHand == StylusHoldingHand.Left)
                         {
-                            CoreServices.InputSystem?.RaiseOnInputDown(InputSource, ControllerHandedness, Interactions[i].MixedRealityInputAction);
+                            direction = toPosition - fromPosition + Camera.main.transform.up * 0.06f + Camera.main.transform.right * 0.08f;
                         }
                         else
                         {
-                            CoreServices.InputSystem?.RaiseOnInputUp(InputSource, ControllerHandedness, Interactions[i].MixedRealityInputAction);
+                            direction = toPosition - fromPosition + Camera.main.transform.up * 0.06f + Camera.main.transform.right * -0.08f;
+                        }
+                        // Stylus pointer raises Pose events  
+                        _controllerPose = MixedRealityPose.ZeroIdentity;
+
+                        _controllerPose.Rotation = Quaternion.LookRotation(direction, Camera.main.transform.up);
+                        _controllerPose.Position = stylusPosition;
+
+                        Interactions[i].PoseData = _controllerPose;
+
+                        if (Interactions[i].Changed)
+                        {
+                            CoreServices.InputSystem.RaisePoseInputChanged(InputSource, ControllerHandedness, Interactions[i].MixedRealityInputAction, _controllerPose);
+                        }
+                    }
+
+                    if (Interactions[i].AxisType == AxisType.Digital)
+                    {
+                        bool keyButton = false;
+                        if (Interactions[i].InputType == DeviceInputType.Select)
+                        {
+                            keyButton = StylusData.Buttons[0]; // ACTION BUTTON
+                        }
+
+                        if (Interactions[i].InputType == DeviceInputType.Menu)
+                        {
+                            keyButton = StylusData.Buttons[1]; // BACK BUTTON
+                        }
+
+                        // Update the interaction data source
+                        Interactions[i].BoolData = keyButton;
+
+                        // If our value changed raise it.
+                        if (Interactions[i].Changed)
+                        {
+                            // Raise input system event if it's enabled
+                            if (Interactions[i].BoolData)
+                            {
+                                CoreServices.InputSystem?.RaiseOnInputDown(InputSource, ControllerHandedness, Interactions[i].MixedRealityInputAction);
+                            }
+                            else
+                            {
+                                CoreServices.InputSystem?.RaiseOnInputUp(InputSource, ControllerHandedness, Interactions[i].MixedRealityInputAction);
+                            }
                         }
                     }
                 }

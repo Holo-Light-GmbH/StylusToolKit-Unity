@@ -20,7 +20,7 @@ MonoBehaviour:
     reference: Microsoft.MixedReality.Toolkit.CameraSystem.MixedRealityCameraSystem,
       Microsoft.MixedReality.Toolkit.Services.CameraSystem
   enableInputSystem: 1
-  inputSystemProfile: {fileID: 11400000, guid: 244d2dcebb3872e4ca92cc6000aa5cec, type: 2}
+  inputSystemProfile: {fileID: 11400000, guid: 26765d07ae8069b4ba7f2b3ca5886ad1, type: 2}
   inputSystemType:
     reference: Microsoft.MixedReality.Toolkit.Input.MixedRealityInputSystem, Microsoft.MixedReality.Toolkit.Services.InputSystem
   enableBoundarySystem: 1
@@ -54,3 +54,4 @@ MonoBehaviour:
     type: 2}
   useServiceInspectors: 1
   renderDepthBuffer: 0
+  enableVerboseLogging: 0

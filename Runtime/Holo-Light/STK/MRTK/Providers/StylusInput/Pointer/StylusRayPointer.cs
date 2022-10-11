@@ -4,6 +4,6 @@ namespace HoloLight.STK.MRTK
 {
     public class StylusRayPointer : ShellHandRayPointer
     {
-
+        
     }
 }

@@ -1,7 +1,7 @@
 {
     "name": "com.hololight.stylustoolkit",
     "displayName": "Stylus XR Toolkit",
-    "version": "1.0.4",
+    "version": "1.1.1",
     "unity": "2018.4",
     "description": "The Stylus Toolkit is a collection of scripts and components intended to accelerate development of applications targeting the new 3D input device Stylus XR for head-mounted units.",
     "keywords": [ "Stylus Toolkit", "Stylus XR", "Holo-Light", "XR", "Toolkit" ],

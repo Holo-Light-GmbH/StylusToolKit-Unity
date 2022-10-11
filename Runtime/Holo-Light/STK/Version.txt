@@ -1,1 +1,1 @@
-Stylus XR Toolkit 1.0.4
+Stylus XR Toolkit 1.1.1

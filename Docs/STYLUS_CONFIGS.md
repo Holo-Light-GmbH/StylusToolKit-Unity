@@ -19,13 +19,13 @@ When you click on the created file, it should look like this.
 	<img src="imgs/StylusConfigScreenshot.PNG" width="60%">
 </p>
 
-**Smoothness** (default is **30**)
+**Responsiveness** (default is **30**)
 
-The lower the value, the smoother and slower the virtual Stylus Pointer will move. The higher the value, the faster it reacts, but too high values can cause jittering. The value can be changed during runtime, to adjust the value by needs.
+The lower the value, the smoother and slower the virtual Stylus Pointer will move. The higher the value, the faster it reacts, but too high values can cause jittering. The value can be changed as well during runtime, to adjust the value by needs.
 
 **Use Bluetooth Settings** (default is **disabled**)
 
-When this option is ticked, firstly you have to pair the HMU in the HoloLens Bluetooth Settings.
+When this option is ticked, firstly you have to pair the HMU in the HoloLens Bluetooth Settings (normally you won't need this).
 
 **Reconnect after Disconnection** (default is **disabled**)
 

@@ -1,9 +1,11 @@
-﻿using HoloLight.STK.Core;
+﻿using System;
+using HoloLight.STK.Core;
 using Microsoft.MixedReality.Toolkit;
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions;
 using static HoloLight.STK.Core.CalibrationPreferences;
 
 namespace HoloLight.STK.MRTK
@@ -46,7 +48,9 @@ namespace HoloLight.STK.MRTK
 
         private HoloStylusManager _manager;
 
-        private bool _initialized = false;
+        private bool _pointersInitialized = false;
+
+        public event EventHandler StylusSourceDetectedEvent;
 
         void OnEnable()
         {
@@ -62,7 +66,7 @@ namespace HoloLight.STK.MRTK
             _manager.EventManager.UnRegisterCallback(StylusEventType.OnStylusPreferedHandChanged, OnStylusPreferedHandChanged);
         }
 
-        void Init()
+        void InitializeStylusPointers()
         {
             var pointers = new HashSet<IMixedRealityPointer>();
 
@@ -92,7 +96,7 @@ namespace HoloLight.STK.MRTK
 
             if (_stylusRayPointer == null)
             {
-                Debug.Log("Stylus Ray Pointer is not defined. Plesae add the prefab inside the Pointers Profile.");
+                Debug.Log("Stylus Ray Pointer is not defined. Please add the prefab inside the Pointers Profile.");
             }
             else
             {
@@ -101,7 +105,7 @@ namespace HoloLight.STK.MRTK
 
             if (_stylusPokePointer == null)
             {
-                Debug.Log("Stylus Poke Pointer is not defined. Plesae add the prefab inside the Pointers Profile.");
+                Debug.Log("Stylus Poke Pointer is not defined. Please add the prefab inside the Pointers Profile.");
             } else
             {
                 _stylusController = _stylusPokePointer.Controller as StylusController;
@@ -110,7 +114,7 @@ namespace HoloLight.STK.MRTK
 
             if (_stylusSpherePointer == null)
             {
-                Debug.Log("Stylus Sphere Pointer is not defined. Plesae add the prefab inside the Pointers Profile.");
+                Debug.Log("Stylus Sphere Pointer is not defined. Please add the prefab inside the Pointers Profile.");
             }
             else
             {
@@ -126,9 +130,13 @@ namespace HoloLight.STK.MRTK
             _stylusTransform = _manager.StylusTransform;
 
             HandleHandPointers();
-            _initialized = true;
+            _pointersInitialized = true;
         }
 
+        private void OnStylusSourceDetected()
+        {
+            StylusSourceDetectedEvent?.Invoke(this,EventArgs.Empty);
+        }
 
         public StylusRayPointer GetRayPointer()
         {
@@ -143,6 +151,15 @@ namespace HoloLight.STK.MRTK
         public StylusSpherePointer GetSpherePointer()
         {
             return _stylusSpherePointer;
+        }
+
+        public void SetRenderersVisible(GameObject controllerParent ,bool visible)
+        {
+            MeshRenderer[] renderers = controllerParent.GetComponentsInChildren<MeshRenderer>();
+            for (int i = 0; i < renderers.Length; i++)
+            {
+                renderers[i].enabled = visible;
+            }
         }
 
         public void DisablePointer(PointerType type)
@@ -209,15 +226,16 @@ namespace HoloLight.STK.MRTK
             }
         }
 
+
         /// <summary>
         /// Enables the Cursor (Poke- and Grabpointers)
         /// </summary>
         private void EnableCursor()
         {
-           // PointerUtils.SetPointerBehavior<StylusSpherePointer>(PointerBehavior.Default, InputSourceType.Other, Handedness.Any); // this does not do what it should
-           // PointerUtils.SetPointerBehavior<StylusPokePointer>(PointerBehavior.Default, InputSourceType.Other, Handedness.Any); 
-            _stylusPokePointer.enabled = true;
-            _stylusSpherePointer.enabled = true;
+           // PointerUtils.SetPointerBehavior<StylusSpherePointer>(PointerBehavior.Default); 
+         //   PointerUtils.SetPointerBehavior<StylusPokePointer>(PointerBehavior.Default); 
+           _stylusPokePointer.enabled = true;
+           _stylusSpherePointer.enabled = true;
         }
 
         /// <summary>
@@ -225,8 +243,8 @@ namespace HoloLight.STK.MRTK
         /// </summary>
         private void DisableCursor()
         {
-           // PointerUtils.SetPointerBehavior<StylusSpherePointer>(PointerBehavior.AlwaysOff, InputSourceType.Other, Handedness.Any);
-           // PointerUtils.SetPointerBehavior<StylusPokePointer>(PointerBehavior.AlwaysOff, InputSourceType.Other, Handedness.Any);
+           // PointerUtils.SetPointerBehavior<StylusSpherePointer>(PointerBehavior.AlwaysOff);
+         //   PointerUtils.SetPointerBehavior<StylusPokePointer>(PointerBehavior.AlwaysOff);
             _stylusPokePointer.enabled = false;
             _stylusSpherePointer.enabled = false;
         }
@@ -236,7 +254,7 @@ namespace HoloLight.STK.MRTK
         /// </summary>
         private void EnableRay()
         {
-           // PointerUtils.SetPointerBehavior<StylusRayPointer>(PointerBehavior.Default, InputSourceType.Other, Handedness.Any);
+           // PointerUtils.SetPointerBehavior<StylusRayPointer>(PointerBehavior.Default);
             _stylusRayPointer.enabled = true;
         }
 
@@ -245,21 +263,22 @@ namespace HoloLight.STK.MRTK
         /// </summary>
         private void DisableRay()
         {
-           // PointerUtils.SetPointerBehavior<StylusRayPointer>(PointerBehavior.AlwaysOff, InputSourceType.Other, Handedness.Any);
-            _stylusRayPointer.enabled = false;
+          //  PointerUtils.SetPointerBehavior<StylusRayPointer>(PointerBehavior.AlwaysOff);
+           _stylusRayPointer.enabled = false;
         }
 
         void Update()
         {
-            if (_initialized && _manager.CalibrationPreferences.StylusPreferredHand == StylusHoldingHand.Auto)
+            if (_pointersInitialized && _manager.CalibrationPreferences.StylusPreferredHand == StylusHoldingHand.Auto)
             {
                 if (!_manager.IsPaired)
                 {
                     EnableAllHandPointers(Handedness.Both);
                     return;
                 }
-
-                if (!_manager.DataParser.IsVisible)
+                
+                // TODO: re-think the logic
+                /*if (!_manager.DataParser.IsVisible)
                 {
                     _stylusNotVisibleSureness++;
                 }
@@ -272,7 +291,7 @@ namespace HoloLight.STK.MRTK
                 {
                     EnableAllHandPointers(Handedness.Both);
                     return;
-                }
+                }*/
 
                 Vector3 leftHandPosition = Vector3.zero;
                 Vector3 rightHandPosition = Vector3.zero;
@@ -378,7 +397,10 @@ namespace HoloLight.STK.MRTK
                 {
                     if (_stylusOnLeftHandSureness > 15)
                     {
-                        StylusIsInLeftHand();
+                        if (_stylusController.HoldingHand != StylusHoldingHand.Left)
+                        {
+                            StylusIsInLeftHand();
+                        }
                         _stylusOnRightHandSureness = 0;
                     }
                     else
@@ -386,12 +408,14 @@ namespace HoloLight.STK.MRTK
                         _stylusOnLeftHandSureness++;
                     }
                 }
-
-                if (Vector3.Distance(_rightHandAveragePosition, _stylusTransform.Position) < Vector3.Distance(_leftHandAveragePosition, _stylusTransform.Position))
+                else
                 {
                     if (_stylusOnRightHandSureness > 15)
                     {
-                        StylusIsInRightHand();
+                        if (_stylusController.HoldingHand != StylusHoldingHand.Right)
+                        {
+                            StylusIsInRightHand();
+                        }
                         _stylusOnLeftHandSureness = 0;
                     }
                     else
@@ -472,9 +496,11 @@ namespace HoloLight.STK.MRTK
         {
             if (eventData.InputSource.SourceName.Contains("Stylus"))
             {
-                Init();
+                InitializeStylusPointers();
 
                 _manager.VisualSettings.Init(_manager);
+                
+                OnStylusSourceDetected();
             }
         }
 
@@ -484,6 +510,17 @@ namespace HoloLight.STK.MRTK
             {
                 DisablePointer(PointerType.All);
             }
+        }
+        
+        /// <summary>
+        /// Returns the actual holding hand, even if the mode StylusHoldingHand mode was set to Auto.
+        /// </summary>
+        /// <returns>StylusHoldingHand.Left or .Right.</returns>
+        public StylusHoldingHand GetCurrentHoldingHand()
+        {
+            Assert.IsTrue(_stylusController.HoldingHand != StylusHoldingHand.Auto, $"Expected {nameof(_stylusController.HoldingHand)} to be either {nameof(StylusHoldingHand.Left)} or {nameof(StylusHoldingHand.Right)}!");
+            
+            return _stylusController.HoldingHand;
         }
     }
 }

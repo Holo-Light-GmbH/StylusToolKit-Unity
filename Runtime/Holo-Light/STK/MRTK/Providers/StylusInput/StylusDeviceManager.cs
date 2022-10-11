@@ -89,7 +89,7 @@ namespace HoloLight.STK.MRTK
 
             IMixedRealityInputSource stylusInputSource = null;
 
-            const Handedness handedness = Handedness.Any;
+            const Handedness handedness = Handedness.Both;
             System.Type controllerType = typeof(StylusController);
 
             // Make sure that the handedness declared in the controller attribute matches what we expect
@@ -97,13 +97,13 @@ namespace HoloLight.STK.MRTK
             if (controllerAttribute != null)
             {
                 Handedness[] handednesses = controllerAttribute.SupportedHandedness;
-                Debug.Assert(handednesses.Length == 1 && handednesses[0] == Handedness.Any, "Unexpected stylus handedness declared in MixedRealityControllerAttribute");
+                Debug.Assert(handednesses.Length == 1 && handednesses[0] == Handedness.Both, "Unexpected Stylus handedness declared in MixedRealityControllerAttribute");
             }
 
             if (Service != null)
             {
-                var pointers = RequestPointers(SupportedControllerType.Stylus, handedness);
-                // this is the string i get from input source... string is somehow 
+                var pointers = RequestPointers(SupportedControllerType.GenericUnity, handedness);
+
                 stylusInputSource = Service.RequestNewGenericInputSource("Stylus Input Source", pointers);
             }
 
@@ -123,9 +123,6 @@ namespace HoloLight.STK.MRTK
                 }
             }
 
-            Controller.SetupConfiguration(typeof(StylusController));
-            Controller.SetupDefaultInteractions(handedness);
-
             if (HoloStylusManager == null)
             {
                 GameObject stylusGO = GameObject.Find("Stylus");
@@ -141,7 +138,7 @@ namespace HoloLight.STK.MRTK
 
                 if (HoloStylusManager == null)
                 {
-                    Debug.LogError("HoloStylusManager Comonent was not found in the Scene. Please add the Stylus Prefab to your Scene");
+                    Debug.LogError("HoloStylusManager Component was not found in the Scene. Please add the Stylus Prefab to your Scene");
                 }
 
                 EnableEvents();
@@ -206,6 +203,7 @@ namespace HoloLight.STK.MRTK
         private void OnStylusConnected(StylusData data)
         {
             Service?.RaiseSourceDetected(Controller.InputSource, Controller);
+            HoloStylusManager.PointerSwitcher.SetRenderersVisible(HoloStylusManager.PointerSwitcher.GetSpherePointer().gameObject, true);
         }
 
         /// <summary>

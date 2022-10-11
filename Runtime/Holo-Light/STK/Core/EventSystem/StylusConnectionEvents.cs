@@ -35,6 +35,5 @@ namespace HoloLight.STK.Core
         {
             OnStylusDisconnected?.Invoke();
         }
-
     }
 }

@@ -17,6 +17,8 @@ using System.IO;
 using System;
 using System.Collections.Concurrent;
 using System.Text;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Runtime.Serialization;
 
 namespace HoloLight.STK.Core
 {
@@ -49,6 +51,18 @@ namespace HoloLight.STK.Core
         public VisualSettings VisualSettings = new VisualSettings();
         public IBLEDevice ConnectedHMU;
 
+        /// <summary>
+        /// Is Stylus visible in the current frame.
+        /// </summary>
+        public bool IsStylusVisible
+        {
+            get => DataParser.IsVisible;
+        }
+        /// <summary>
+        /// Was Stylus visible in the previous frame.
+        /// </summary>
+        private bool wasStylusVisible = false;
+
         [SerializeField]
         private bool _logInfos = false;
 
@@ -76,6 +90,7 @@ namespace HoloLight.STK.Core
         private Stopwatch _timeOutWatch = new Stopwatch();
 
         private string _filePath;
+        private string _applicationPath;
 
         private bool _invokeStylusReadyEvent;
         private bool _invokeStylusDisConnectedEvent = false;
@@ -91,6 +106,9 @@ namespace HoloLight.STK.Core
         public event EventHandler<IBLEDevice> OnStylusReady;
         public event EventHandler DisconnectedEvent;
         public event EventHandler ConnectionTimeoutEvent;
+
+        public event EventHandler StylusFoundEvent;
+        public event EventHandler StylusLostEvent;
 
         private ConcurrentQueue<IBLEDevice> _lastFoundHMUDevices = new ConcurrentQueue<IBLEDevice>();
         private List<IBLEDevice> _knownHMUs = new List<IBLEDevice>();
@@ -147,7 +165,7 @@ namespace HoloLight.STK.Core
         private void Init()
         {
             _filePath = Application.persistentDataPath + "/stylus.nnf";
-
+            _applicationPath = Application.persistentDataPath;
 #if UNITY_EDITOR
             if (StylusConfiguration.IsEmulator)
             {
@@ -309,7 +327,7 @@ namespace HoloLight.STK.Core
         }
 
         private void OnStylusDataRecieved(byte[] data)
-        {
+        {            
             if (data.Length == 0)
             {
                 Debug.Log("EMPTY STREAM. Please turn off/on the HMU and try again.");
@@ -366,6 +384,25 @@ namespace HoloLight.STK.Core
                 _invokeStylusDisConnectedEvent = false;
                 EventManager.TriggerDisconnected();
             }
+
+            if (DataParser.IsVisible != wasStylusVisible)
+            {
+                OnStylusVisibilityChange();
+            }
+
+            wasStylusVisible = DataParser.IsVisible;
+        }
+
+        private void OnStylusVisibilityChange()
+        {
+            if (DataParser.IsVisible)
+            {
+                StylusFoundEvent?.Invoke(this, EventArgs.Empty);
+            }
+            else
+            {
+                StylusLostEvent?.Invoke(this, EventArgs.Empty);
+            }
         }
 
         private async void OnStylusConnected(IBLEDevice connectedDevice)
@@ -378,8 +415,9 @@ namespace HoloLight.STK.Core
 #if UNITY_EDITOR
             if (StylusConfiguration.IsEmulator)
             {
+                ConnectedHMU = connectedDevice;
                 _mouseStylusControl.Activate(this);
-                OnReadyToUse(connectedDevice);
+                _invokeStylusReadyEvent = true;
                 return; // Emulator does not need the NNF File 
             }
 #endif
@@ -409,12 +447,66 @@ namespace HoloLight.STK.Core
                     }
                 }
 
+                string clearedHMUID = GetCleanMACAddress(connectedDevice.ID).Replace(":", string.Empty);
+                string NNFfilePathOfThisHMU = Path.Combine(_applicationPath, clearedHMUID + ".nnf");
+                // try to read the "HMU:ID.nnf" file
+                if (StylusConfiguration.AllowFastConnection)
+                {
+                    bool nnfFileLocalAvailable = File.Exists(NNFfilePathOfThisHMU);
+                    if (nnfFileLocalAvailable)
+                    {
+                        try
+                        {
+                            using (FileStream nnfBinaryFile = new FileStream(NNFfilePathOfThisHMU, FileMode.Open, FileAccess.Read))
+                            {
+                                BinaryFormatter formatter = new BinaryFormatter();
+
+                                try
+                                {
+                                    nnfData = (NeuralNetworkData)formatter.Deserialize(nnfBinaryFile);
+                                    DataParser.Initialize(nnfData);
+                                }
+                                catch (SerializationException excp)
+                                {
+                                    Debug.LogError("Failed to Deserialize. Reason: " + excp.Message);
+                                    throw;
+                                }
+                            }
+                        }
+                        catch (System.Exception e)
+                        {
+                            Debug.LogError("The " + connectedDevice.ID + ".nnf File is wrong or corrupted. DataParser could not parse that file.\n" + e.Message.ToString());
+                        }
+                    }
+                }
+
+
+                // try to read directly from the HMU
                 if (!DataParser.IsInitialized)
                 {
                     try
                     {
                         nnfData = await _nnReader.GetHMUData();
                         DataParser.Initialize(nnfData);
+
+                        // and save the file locally so next time we can read it from the file
+                        if (StylusConfiguration.AllowFastConnection)
+                        {
+                            using (FileStream fs = new FileStream(NNFfilePathOfThisHMU, FileMode.OpenOrCreate))
+                            {
+                                BinaryFormatter formatter = new BinaryFormatter();
+                                try
+                                {
+                                    formatter.Serialize(fs, nnfData);
+                                    fs.Close();
+                                }
+                                catch (SerializationException excp)
+                                {
+                                    Debug.LogError("Failed to serialize. Reason: " + excp.Message);
+                                    throw;
+                                }
+                            }
+                        }
                     }
                     catch (System.Exception e)
                     {
@@ -439,9 +531,14 @@ namespace HoloLight.STK.Core
             // Vibrate the Stylus to give feedback to user
             InfoManager.Vibrate(VibrateTime.VeryShort);
 
-            DeviceScanner.StopScanning();
             ConnectedHMU = connectedDevice;
+            DeviceScanner.StopScanning();
             _invokeStylusReadyEvent = true;
+        }
+        
+        public void StopDeviceSearch()
+        {
+            _nativePairingManager.StopDeviceSearch();
         }
 
         /// <summary>
@@ -461,7 +558,6 @@ namespace HoloLight.STK.Core
         public void Disconnect()
         {
             Connector.Disconnect();
-            // fire disconnected event immediately
         }
 
         /// <summary>

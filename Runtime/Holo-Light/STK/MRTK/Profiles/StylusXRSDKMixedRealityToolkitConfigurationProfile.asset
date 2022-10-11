@@ -13,6 +13,7 @@ MonoBehaviour:
   m_Name: StylusXRSDKMixedRealityToolkitConfigurationProfile
   m_EditorClassIdentifier: 
   isCustomProfile: 1
+  experienceSettingsProfile: {fileID: 0}
   targetExperienceScale: 3
   enableCameraSystem: 1
   cameraProfile: {fileID: 11400000, guid: 474d8a755132d494b857922edf46f689, type: 2}
@@ -27,6 +28,8 @@ MonoBehaviour:
   boundarySystemType:
     reference: Microsoft.MixedReality.Toolkit.Boundary.MixedRealityBoundarySystem,
       Microsoft.MixedReality.Toolkit.Services.BoundarySystem
+  xrsdkBoundarySystemType:
+    reference: Microsoft.MixedReality.Toolkit.XRSDK.XRSDKBoundarySystem, Microsoft.MixedReality.Toolkit.Providers.XRSDK
   boundaryVisualizationProfile: {fileID: 11400000, guid: 6d28cce596b44bd3897ca86f8b24e076,
     type: 2}
   enableTeleportSystem: 0
@@ -54,3 +57,4 @@ MonoBehaviour:
     type: 2}
   useServiceInspectors: 1
   renderDepthBuffer: 0
+  enableVerboseLogging: 0

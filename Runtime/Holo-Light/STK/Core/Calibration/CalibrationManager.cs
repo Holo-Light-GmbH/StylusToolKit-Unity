@@ -1,4 +1,5 @@
 ﻿
+using System;
 using HoloLight.STK.MRTK;
 using Microsoft.MixedReality.Toolkit.Input;
 using UnityEngine;
@@ -36,6 +37,9 @@ namespace HoloLight.STK.Core
         private Transform _cursorOldTransform;
 
         private StylusSpherePointer _stylusCursor;
+
+        public event EventHandler OnCalibrationStarted;
+        public event EventHandler OnCalibrationStopped;
 
         void OnEnable()
         {
@@ -106,7 +110,7 @@ namespace HoloLight.STK.Core
         {
             if (inputEventData.InputSource.SourceName.Contains("Stylus"))
             {
-                string compareToString = _triggerOn == 0 ? "Select" : "Stylus Back";
+                string compareToString = _triggerOn == 0 ? "Select" : "Menu";
                 if (inputEventData.MixedRealityInputAction.Description.Contains(compareToString))
                 {
                     _cursorOldTransform = _stylusCursor.transform.parent;
@@ -117,6 +121,9 @@ namespace HoloLight.STK.Core
                     _startRotation = _manager.StylusTransform.RawRotation;
 
                     _stylusController.DisablePositionChanges();
+                    
+                    // Invoke start calibration event
+                    OnCalibrationStarted?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
@@ -125,7 +132,7 @@ namespace HoloLight.STK.Core
         {
             if (inputEventData.InputSource.SourceName.Contains("Stylus"))
             {
-                string compareToString = _triggerOn == 0 ? "Select" : "Stylus Back";
+                string compareToString = _triggerOn == 0 ? "Select" : "Menu";
                 if (inputEventData.MixedRealityInputAction.Description.Contains(compareToString))
                 {
                     _manager.PointerSwitcher.EnablePointer(StylusPointerSwitcher.PointerType.StylusRayPointer);
@@ -136,6 +143,9 @@ namespace HoloLight.STK.Core
 
                     _stylusController.EnablePositionChanges();
                     _stylusCursor.transform.parent = _cursorOldTransform;
+                    
+                    // Invoke stop calibration event
+                    OnCalibrationStopped?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
